@@ -1,0 +1,64 @@
+export default function TravelGallery() {
+  const destinations = [
+    {
+      name: 'New York, USA',
+      image:
+        'https://images.unsplash.com/photo-1499092346589-b9b6be3e94b?q=80&w=1200&auto=format&fit=crop',
+      text: 'Storby, skyskrabere og masser af oplevelser.'
+    },
+    {
+      name: 'Miami, Florida',
+      image:
+        'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop',
+      text: 'Sol, strand og palmer i Florida.'
+    },
+    {
+      name: 'Frankrig',
+      image:
+        'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1200&auto=format&fit=crop',
+      text: 'Smukke byer, kultur og lækker mad.'
+    },
+    {
+      name: 'Kroatien',
+      image:
+        'https://images.unsplash.com/photo-1555990538-1730d2f0b7c4?q=80&w=1200&auto=format&fit=crop',
+      text: 'Klart vand og flotte kystbyer.'
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-sky-100 to-white text-gray-900">
+      <header className="text-center py-14 px-4">
+        <h1 className="text-5xl font-bold mb-4">🌍 Vores Rejser</h1>
+        <p className="text-lg max-w-2xl mx-auto text-gray-700">
+          En hjemmeside med billeder fra vores rejser rundt i verden.
+          Senere kan I selv udskifte billederne med jeres egne.
+        </p>
+      </header>
+
+      <main className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 px-6 pb-16">
+        {destinations.map((place, index) => (
+          <div
+            key={index}
+            className="bg-white rounded-3xl overflow-hidden shadow-xl hover:scale-[1.02] transition-transform duration-300"
+          >
+            <img
+              src={place.image}
+              alt={place.name}
+              className="w-full h-72 object-cover"
+            />
+
+            <div className="p-6">
+              <h2 className="text-3xl font-semibold mb-3">{place.name}</h2>
+              <p className="text-gray-600 text-lg">{place.text}</p>
+            </div>
+          </div>
+        ))}
+      </main>
+
+      <footer className="text-center py-8 text-gray-500 text-sm">
+        Lavet til GitHub Pages ✨
+      </footer>
+    </div>
+  );
+}
