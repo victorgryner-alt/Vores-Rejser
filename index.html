@@ -4,97 +4,177 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vores Rejser</title>
-
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 text-gray-900">
 
-  <section class="relative min-h-screen flex flex-col items-center justify-center text-center overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 text-white px-6">
-    <h1 class="text-6xl md:text-8xl font-extrabold mb-6 drop-shadow-2xl">
-      Vores Rejser
-    </h1>
+<body class="bg-gray-100">
 
-    <p class="text-xl md:text-2xl max-w-3xl mb-10 text-white/90">
-      Minder fra vores rejser rundt i verden 🌍
-    </p>
+<!-- MUSIC -->
+<audio id="bgMusic" loop>
+  <source src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_d875a1f2c2.mp3?filename=soft-piano-ambient-121534.mp3" type="audio/mpeg">
+</audio>
 
-    <div class="flex flex-wrap justify-center gap-4">
-      <div class="bg-white/20 backdrop-blur-md px-6 py-3 rounded-full text-lg">New York</div>
-      <div class="bg-white/20 backdrop-blur-md px-6 py-3 rounded-full text-lg">Miami</div>
-      <div class="bg-white/20 backdrop-blur-md px-6 py-3 rounded-full text-lg">Frankrig</div>
-      <div class="bg-white/20 backdrop-blur-md px-6 py-3 rounded-full text-lg">Kroatien</div>
+<button onclick="toggleMusic()" class="fixed bottom-6 right-6 bg-black text-white px-4 py-3 rounded-full shadow-xl z-50">
+  🎵 Musik
+</button>
+
+<!-- HERO -->
+<section class="min-h-screen bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 text-white flex flex-col items-center justify-center text-center px-6">
+  <h1 class="text-6xl md:text-8xl font-extrabold mb-6">Vores Rejser</h1>
+  <p class="text-xl md:text-2xl max-w-2xl opacity-90">Swipe, klik og oplev vores rejser 🌍</p>
+</section>
+
+<!-- DESTINATIONS -->
+<section class="max-w-6xl mx-auto py-16 px-6">
+  <h2 class="text-4xl font-bold text-center mb-10">Destinationer</h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+    <div onclick="openGallery('ny')" class="cursor-pointer bg-white rounded-3xl shadow-xl overflow-hidden hover:scale-105 transition">
+      <img class="h-64 w-full object-cover" src="https://images.unsplash.com/photo-1499092346589-b9b6be3e94b?q=80&w=1200&auto=format&fit=crop" />
+      <div class="p-6"><h3 class="text-3xl font-bold">New York</h3><p>Juli 2024</p></div>
     </div>
-  </section>
 
-  <section class="max-w-7xl mx-auto px-6 py-20">
-    <h2 class="text-5xl font-bold text-center mb-14">
-      Alle vores destinationer ✈️
-    </h2>
+    <div onclick="openGallery('miami')" class="cursor-pointer bg-white rounded-3xl shadow-xl overflow-hidden hover:scale-105 transition">
+      <img class="h-64 w-full object-cover" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop" />
+      <div class="p-6"><h3 class="text-3xl font-bold">Miami</h3><p>August 2024</p></div>
+    </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+    <div onclick="openGallery('frankrig')" class="cursor-pointer bg-white rounded-3xl shadow-xl overflow-hidden hover:scale-105 transition">
+      <img class="h-64 w-full object-cover" src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1200&auto=format&fit=crop" />
+      <div class="p-6"><h3 class="text-3xl font-bold">Frankrig</h3><p>Juni 2023</p></div>
+    </div>
 
-      <div class="bg-white rounded-3xl overflow-hidden shadow-2xl hover:scale-[1.02] transition duration-300">
-        <img
-          src="https://images.unsplash.com/photo-1499092346589-b9b6be3e94b?q=80&w=1200&auto=format&fit=crop"
-          class="w-full h-80 object-cover"
-        />
+    <div onclick="openGallery('kroatien')" class="cursor-pointer bg-white rounded-3xl shadow-xl overflow-hidden hover:scale-105 transition">
+      <img class="h-64 w-full object-cover" src="https://images.unsplash.com/photo-1555990538-1730d2f0b7c4?q=80&w=1200&auto=format&fit=crop" />
+      <div class="p-6"><h3 class="text-3xl font-bold">Kroatien</h3><p>Juli 2023</p></div>
+    </div>
 
-        <div class="p-8">
-          <h3 class="text-4xl font-bold mb-4">New York</h3>
-          <p class="text-lg text-gray-600">
-            Skyskrabere, storbyliv og fantastiske oplevelser.
-          </p>
-        </div>
+  </div>
+</section>
+
+<!-- MODAL -->
+<div id="modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-6 z-50">
+
+  <div class="bg-white max-w-5xl w-full rounded-2xl overflow-hidden relative">
+
+    <button onclick="closeGallery()" class="absolute top-4 right-4 text-black text-2xl">✖</button>
+
+    <div class="p-6">
+      <h2 id="modalTitle" class="text-3xl font-bold"></h2>
+      <p id="modalDate" class="text-gray-500 mb-4"></p>
+
+      <!-- SWIPE IMAGE -->
+      <div class="relative">
+        <img id="modalImage" class="w-full h-96 object-cover rounded-xl" />
+
+        <button onclick="prevImage()" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black text-white px-3 py-2 rounded-full">‹</button>
+        <button onclick="nextImage()" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black text-white px-3 py-2 rounded-full">›</button>
       </div>
 
-      <div class="bg-white rounded-3xl overflow-hidden shadow-2xl hover:scale-[1.02] transition duration-300">
-        <img
-          src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop"
-          class="w-full h-80 object-cover"
-        />
-
-        <div class="p-8">
-          <h3 class="text-4xl font-bold mb-4">Miami</h3>
-          <p class="text-lg text-gray-600">
-            Sol, strand og palmer i Florida.
-          </p>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-3xl overflow-hidden shadow-2xl hover:scale-[1.02] transition duration-300">
-        <img
-          src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1200&auto=format&fit=crop"
-          class="w-full h-80 object-cover"
-        />
-
-        <div class="p-8">
-          <h3 class="text-4xl font-bold mb-4">Frankrig</h3>
-          <p class="text-lg text-gray-600">
-            Smukke byer, kultur og fantastisk mad.
-          </p>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-3xl overflow-hidden shadow-2xl hover:scale-[1.02] transition duration-300">
-        <img
-          src="https://images.unsplash.com/photo-1555990538-1730d2f0b7c4?q=80&w=1200&auto=format&fit=crop"
-          class="w-full h-80 object-cover"
-        />
-
-        <div class="p-8">
-          <h3 class="text-4xl font-bold mb-4">Kroatien</h3>
-          <p class="text-lg text-gray-600">
-            Flotte strande og smukke gamle byer.
-          </p>
-        </div>
+      <!-- MAP -->
+      <div class="mt-6">
+        <iframe id="map" class="w-full h-64 rounded-xl" loading="lazy"></iframe>
       </div>
 
     </div>
-  </section>
 
-  <footer class="text-center py-10 text-gray-500 text-lg">
-    Lavet med ❤️ til vores rejser
-  </footer>
+  </div>
+</div>
+
+<script>
+let currentGallery = null;
+let currentIndex = 0;
+
+const galleries = {
+  ny: {
+    title: "New York",
+    date: "Juli 2024",
+    images: [
+      "https://images.unsplash.com/photo-1522083165195-3424ed129620",
+      "https://images.unsplash.com/photo-1526401281623-3596d0b6a2b0",
+      "https://images.unsplash.com/photo-1485871981521-5b1fd3805eee"
+    ],
+    map: "https://www.google.com/maps?q=New+York&output=embed"
+  },
+  miami: {
+    title: "Miami",
+    date: "August 2024",
+    images: [
+      "https://images.unsplash.com/photo-1501117716987-c8e1ecb2102c",
+      "https://images.unsplash.com/photo-1506929562872-bb421503ef21",
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb"
+    ],
+    map: "https://www.google.com/maps?q=Miami&output=embed"
+  },
+  frankrig: {
+    title: "Frankrig",
+    date: "Juni 2023",
+    images: [
+      "https://images.unsplash.com/photo-1499856871958-5b9627545d1a",
+      "https://images.unsplash.com/photo-1502602898657-3e91760cbb34"
+    ],
+    map: "https://www.google.com/maps?q=France&output=embed"
+  },
+  kroatien: {
+    title: "Kroatien",
+    date: "Juli 2023",
+    images: [
+      "https://images.unsplash.com/photo-1500375592092-40eb2168fd21",
+      "https://images.unsplash.com/photo-1501785888041-af3ef285b470"
+    ],
+    map: "https://www.google.com/maps?q=Croatia&output=embed"
+  }
+};
+
+function openGallery(key) {
+  currentGallery = galleries[key];
+  currentIndex = 0;
+
+  document.getElementById("modal").classList.remove("hidden");
+  document.getElementById("modalTitle").innerText = currentGallery.title;
+  document.getElementById("modalDate").innerText = currentGallery.date;
+
+  document.getElementById("map").src = currentGallery.map;
+
+  updateImage();
+}
+
+function updateImage() {
+  document.getElementById("modalImage").src = currentGallery.images[currentIndex];
+}
+
+function nextImage() {
+  currentIndex = (currentIndex + 1) % currentGallery.images.length;
+  updateImage();
+}
+
+function prevImage() {
+  currentIndex = (currentIndex - 1 + currentGallery.images.length) % currentGallery.images.length;
+  updateImage();
+}
+
+function closeGallery() {
+  document.getElementById("modal").classList.add("hidden");
+}
+
+function toggleMusic() {
+  const music = document.getElementById("bgMusic");
+  if (music.paused) music.play();
+  else music.pause();
+}
+
+// SWIPE SUPPORT
+let startX = 0;
+document.addEventListener("touchstart", e => startX = e.touches[0].clientX);
+document.addEventListener("touchend", e => {
+  let endX = e.changedTouches[0].clientX;
+  if (!currentGallery) return;
+
+  if (startX - endX > 50) nextImage();
+  else if (endX - startX > 50) prevImage();
+});
+</script>
 
 </body>
 </html>
