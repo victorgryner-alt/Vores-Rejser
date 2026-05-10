@@ -1,99 +1,100 @@
-export default function TravelGallery() {
-  const destinations = [
-    {
-      name: 'New York, USA',
-      image:
-        'https://images.unsplash.com/photo-1499092346589-b9b6be3e94b?q=80&w=1200&auto=format&fit=crop',
-      text: 'Storby, skyskrabere og masser af oplevelser.'
-    },
-    {
-      name: 'Miami, Florida',
-      image:
-        'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop',
-      text: 'Sol, strand og palmer i Florida.'
-    },
-    {
-      name: 'Frankrig',
-      image:
-        'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1200&auto=format&fit=crop',
-      text: 'Smukke byer, kultur og lækker mad.'
-    },
-    {
-      name: 'Kroatien',
-      image:
-        'https://images.unsplash.com/photo-1555990538-1730d2f0b7c4?q=80&w=1200&auto=format&fit=crop',
-      text: 'Klart vand og flotte kystbyer.'
-    }
-  ];
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vores Rejser</title>
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-100 to-white text-gray-900">
-      <header className="relative overflow-hidden text-center py-24 px-6 bg-black text-white">
-        <div className="absolute inset-0 bg-gradient-to-r from-sky-500 via-blue-600 to-purple-700 opacity-90"></div>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900">
 
-        <div className="relative z-10">
-          <h1 className="text-6xl md:text-7xl font-extrabold mb-6 tracking-tight">
-            Vores Rejser
-          </h1>
+  <section class="relative min-h-screen flex flex-col items-center justify-center text-center overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 text-white px-6">
+    <h1 class="text-6xl md:text-8xl font-extrabold mb-6 drop-shadow-2xl">
+      Vores Rejser
+    </h1>
 
-          <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto mb-10">
-            Oplev vores eventyr rundt i verden gennem billeder,
-            minder og fantastiske destinationer.
-          </p>
+    <p class="text-xl md:text-2xl max-w-3xl mb-10 text-white/90">
+      Minder fra vores rejser rundt i verden 🌍
+    </p>
 
-          <div className="flex flex-wrap justify-center gap-4">
-            {destinations.map((place, index) => (
-              <div
-                key={index}
-                className="bg-white/15 backdrop-blur-md border border-white/20 px-6 py-3 rounded-full text-lg shadow-lg hover:bg-white/25 transition"
-              >
-                {place.name}
-              </div>
-            ))}
-          </div>
-        </div>
-      </header>
-
-      <section className="max-w-6xl mx-auto px-6 py-16">
-        <h2 className="text-4xl font-bold mb-10 text-center">
-          🌍 Alle vores destinationer
-        </h2>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {destinations.map((place, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-2xl p-6 text-center shadow-lg hover:shadow-2xl transition hover:-translate-y-1"
-            >
-              <h3 className="text-2xl font-semibold">{place.name}</h3>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <main className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 px-6 pb-16">
-        {destinations.map((place, index) => (
-          <div
-            key={index}
-            className="bg-white rounded-3xl overflow-hidden shadow-xl hover:scale-[1.02] transition-transform duration-300"
-          >
-            <img
-              src={place.image}
-              alt={place.name}
-              className="w-full h-72 object-cover"
-            />
-
-            <div className="p-6">
-              <h2 className="text-3xl font-semibold mb-3">{place.name}</h2>
-              <p className="text-gray-600 text-lg">{place.text}</p>
-            </div>
-          </div>
-        ))}
-      </main>
-
-      <footer className="text-center py-8 text-gray-500 text-sm">
-        Lavet til GitHub Pages ✨
-      </footer>
+    <div class="flex flex-wrap justify-center gap-4">
+      <div class="bg-white/20 backdrop-blur-md px-6 py-3 rounded-full text-lg">New York</div>
+      <div class="bg-white/20 backdrop-blur-md px-6 py-3 rounded-full text-lg">Miami</div>
+      <div class="bg-white/20 backdrop-blur-md px-6 py-3 rounded-full text-lg">Frankrig</div>
+      <div class="bg-white/20 backdrop-blur-md px-6 py-3 rounded-full text-lg">Kroatien</div>
     </div>
-  );
-}
+  </section>
+
+  <section class="max-w-7xl mx-auto px-6 py-20">
+    <h2 class="text-5xl font-bold text-center mb-14">
+      Alle vores destinationer ✈️
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+
+      <div class="bg-white rounded-3xl overflow-hidden shadow-2xl hover:scale-[1.02] transition duration-300">
+        <img
+          src="https://images.unsplash.com/photo-1499092346589-b9b6be3e94b?q=80&w=1200&auto=format&fit=crop"
+          class="w-full h-80 object-cover"
+        />
+
+        <div class="p-8">
+          <h3 class="text-4xl font-bold mb-4">New York</h3>
+          <p class="text-lg text-gray-600">
+            Skyskrabere, storbyliv og fantastiske oplevelser.
+          </p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl overflow-hidden shadow-2xl hover:scale-[1.02] transition duration-300">
+        <img
+          src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop"
+          class="w-full h-80 object-cover"
+        />
+
+        <div class="p-8">
+          <h3 class="text-4xl font-bold mb-4">Miami</h3>
+          <p class="text-lg text-gray-600">
+            Sol, strand og palmer i Florida.
+          </p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl overflow-hidden shadow-2xl hover:scale-[1.02] transition duration-300">
+        <img
+          src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1200&auto=format&fit=crop"
+          class="w-full h-80 object-cover"
+        />
+
+        <div class="p-8">
+          <h3 class="text-4xl font-bold mb-4">Frankrig</h3>
+          <p class="text-lg text-gray-600">
+            Smukke byer, kultur og fantastisk mad.
+          </p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl overflow-hidden shadow-2xl hover:scale-[1.02] transition duration-300">
+        <img
+          src="https://images.unsplash.com/photo-1555990538-1730d2f0b7c4?q=80&w=1200&auto=format&fit=crop"
+          class="w-full h-80 object-cover"
+        />
+
+        <div class="p-8">
+          <h3 class="text-4xl font-bold mb-4">Kroatien</h3>
+          <p class="text-lg text-gray-600">
+            Flotte strande og smukke gamle byer.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="text-center py-10 text-gray-500 text-lg">
+    Lavet med ❤️ til vores rejser
+  </footer>
+
+</body>
+</html>
