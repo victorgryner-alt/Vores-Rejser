@@ -3,104 +3,186 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FIFA Turnering</title>
+<title>FIFA Tournament</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
-body{
-    font-family:Arial,sans-serif;
-    background:#1a1a1a;
-    color:white;
-    max-width:1200px;
-    margin:auto;
-    padding:20px;
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Inter,sans-serif;
 }
 
-h1,h2{
-    text-align:center;
+body{
+background:linear-gradient(135deg,#0f172a,#1e1b4b,#6d28d9);
+color:white;
+padding:20px;
+min-height:100vh;
+}
+
+.container{
+max-width:1400px;
+margin:auto;
+}
+
+h1{
+font-size:3rem;
+text-align:center;
+margin-bottom:10px;
+}
+
+.subtitle{
+text-align:center;
+opacity:.8;
+margin-bottom:25px;
+}
+
+.glass{
+background:rgba(255,255,255,.08);
+backdrop-filter:blur(15px);
+border:1px solid rgba(255,255,255,.1);
+border-radius:20px;
+padding:20px;
+margin-bottom:20px;
 }
 
 button{
-    padding:12px 20px;
-    font-size:18px;
-    cursor:pointer;
-    display:block;
-    margin:auto;
+background:#22c55e;
+border:none;
+padding:15px;
+border-radius:12px;
+color:white;
+font-weight:700;
+cursor:pointer;
+width:100%;
+font-size:16px;
 }
 
-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:20px;
-    background:white;
-    color:black;
+button:hover{
+transform:scale(1.02);
 }
 
-th,td{
-    border:1px solid #ccc;
-    padding:10px;
-    text-align:center;
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+}
+
+.team{
+display:flex;
+justify-content:space-between;
+padding:10px;
+margin-bottom:8px;
+background:rgba(255,255,255,.05);
+border-radius:10px;
+}
+
+.match{
+display:grid;
+grid-template-columns:1fr 70px 70px 1fr;
+gap:10px;
+align-items:center;
+padding:10px;
+margin-bottom:10px;
+background:rgba(255,255,255,.05);
+border-radius:12px;
 }
 
 input{
-    width:60px;
-    text-align:center;
+width:100%;
+height:40px;
+border:none;
+border-radius:10px;
+text-align:center;
+font-size:16px;
 }
 
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+padding:12px;
+text-align:center;
+}
+
+tr:nth-child(even){
+background:rgba(255,255,255,.05);
+}
+
+.gold{color:gold;font-weight:800;}
+.silver{color:silver;font-weight:800;}
+.bronze{color:#cd7f32;font-weight:800;}
+
 #winner{
-    text-align:center;
-    font-size:28px;
-    color:gold;
-    margin:20px;
+font-size:28px;
+font-weight:800;
+text-align:center;
+margin-top:15px;
+color:gold;
+}
+
+@media(max-width:800px){
+.grid{
+grid-template-columns:1fr;
+}
+.match{
+grid-template-columns:1fr 60px 60px 1fr;
+}
 }
 </style>
 </head>
 <body>
 
-<h1>🏆 FIFA Turnering</h1>
+<div class="container">
 
-<button onclick="startTournament()">Start Turnering</button>
+<h1>🏆 FIFA TOURNERING</h1>
+<div class="subtitle">Bertel • Victor • Aron • Kasper • Mathias • Marcus</div>
 
+<div class="glass">
+<button onclick="startTournament()">🎮 Start Ny Turnering</button>
 <div id="winner"></div>
+</div>
 
-<h2>Hold</h2>
+<div class="grid">
+
+<div class="glass">
+<h2>⚽ Hold</h2>
+<div id="teams"></div>
+</div>
+
+<div class="glass">
+<h2>🏅 Stilling</h2>
+
 <table>
 <thead>
 <tr>
-<th>Spiller</th>
-<th>Hold</th>
-</tr>
-</thead>
-<tbody id="teams"></tbody>
-</table>
-
-<h2>Kampe</h2>
-<table>
-<thead>
-<tr>
-<th>Hjemme</th>
-<th>Mål</th>
-<th>Mål</th>
-<th>Ude</th>
-</tr>
-</thead>
-<tbody id="matches"></tbody>
-</table>
-
-<h2>Stilling</h2>
-<table>
-<thead>
-<tr>
+<th>#</th>
 <th>Spiller</th>
 <th>Point</th>
-<th>Målscore</th>
+<th>MS</th>
 </tr>
 </thead>
 <tbody id="standings"></tbody>
 </table>
 
+</div>
+
+</div>
+
+<div class="glass">
+<h2>📅 Kampe</h2>
+<div id="matches"></div>
+</div>
+
+</div>
+
 <script>
 
-const players = [
+const players=[
 "Bertel",
 "Victor",
 "Aron",
@@ -109,209 +191,234 @@ const players = [
 "Marcus"
 ];
 
-const fifaTeams = [
+const teams=[
 "Real Madrid",
 "Barcelona",
 "Liverpool",
-"Manchester City",
 "Arsenal",
 "PSG",
 "Bayern München",
+"Manchester City",
 "Chelsea",
-"Juventus",
 "Inter",
+"Juventus",
 "AC Milan",
 "Dortmund"
 ];
 
-let assignedTeams = {};
-let matches = [];
+let assignedTeams={};
+let matches=[];
 
-function shuffle(array){
-    for(let i=array.length-1;i>0;i--){
-        let j=Math.floor(Math.random()*(i+1));
-        [array[i],array[j]]=[array[j],array[i]];
-    }
+function shuffle(arr){
+for(let i=arr.length-1;i>0;i--){
+const j=Math.floor(Math.random()*(i+1));
+[arr[i],arr[j]]=[arr[j],arr[i]];
+}
+}
+
+function save(){
+localStorage.setItem("fifaData",
+JSON.stringify({
+assignedTeams,
+matches
+}));
+}
+
+function load(){
+const data=localStorage.getItem("fifaData");
+
+if(!data) return;
+
+const parsed=JSON.parse(data);
+
+assignedTeams=parsed.assignedTeams;
+matches=parsed.matches;
+
+renderTeams();
+renderMatches();
+updateTable();
 }
 
 function startTournament(){
 
-    assignedTeams = {};
-    matches = [];
+assignedTeams={};
+matches=[];
 
-    let teams = [...fifaTeams];
-    shuffle(teams);
+const randomTeams=[...teams];
+shuffle(randomTeams);
 
-    players.forEach((player,index)=>{
-        assignedTeams[player]=teams[index];
-    });
+players.forEach((player,index)=>{
+assignedTeams[player]=randomTeams[index];
+});
 
-    renderTeams();
+for(let i=0;i<players.length;i++){
+for(let j=i+1;j<players.length;j++){
 
-    for(let i=0;i<players.length;i++){
-        for(let j=i+1;j<players.length;j++){
+matches.push({
+home:players[i],
+away:players[j],
+homeGoals:"",
+awayGoals:""
+});
 
-            matches.push({
-                home:players[i],
-                away:players[j],
-                homeGoals:null,
-                awayGoals:null
-            });
+}
+}
 
-        }
-    }
+shuffle(matches);
 
-    shuffle(matches);
-
-    renderMatches();
-    updateTable();
+renderTeams();
+renderMatches();
+updateTable();
+save();
 }
 
 function renderTeams(){
 
-    let html="";
+let html="";
 
-    players.forEach(player=>{
+players.forEach(player=>{
 
-        html+=`
-        <tr>
-            <td>${player}</td>
-            <td>${assignedTeams[player]}</td>
-        </tr>
-        `;
+html+=`
+<div class="team">
+<span>${player}</span>
+<strong>${assignedTeams[player]}</strong>
+</div>
+`;
 
-    });
+});
 
-    document.getElementById("teams").innerHTML=html;
+document.getElementById("teams").innerHTML=html;
 }
 
 function renderMatches(){
 
-    let html="";
+let html="";
 
-    matches.forEach((match,index)=>{
+matches.forEach((m,index)=>{
 
-        html+=`
-        <tr>
-            <td>${match.home} (${assignedTeams[match.home]})</td>
+html+=`
+<div class="match">
 
-            <td>
-            <input
-            type="number"
-            min="0"
-            onchange="setScore(${index},'home',this.value)">
-            </td>
+<div>
+${m.home}
+<br>
+<small>${assignedTeams[m.home]}</small>
+</div>
 
-            <td>
-            <input
-            type="number"
-            min="0"
-            onchange="setScore(${index},'away',this.value)">
-            </td>
+<input
+type="number"
+min="0"
+value="${m.homeGoals}"
+onchange="setScore(${index},'home',this.value)"
+>
 
-            <td>${match.away} (${assignedTeams[match.away]})</td>
-        </tr>
-        `;
+<input
+type="number"
+min="0"
+value="${m.awayGoals}"
+onchange="setScore(${index},'away',this.value)"
+>
 
-    });
+<div style="text-align:right">
+${m.away}
+<br>
+<small>${assignedTeams[m.away]}</small>
+</div>
 
-    document.getElementById("matches").innerHTML=html;
+</div>
+`;
+
+});
+
+document.getElementById("matches").innerHTML=html;
 }
 
 function setScore(index,side,value){
 
-    value=parseInt(value);
+matches[index][side+"Goals"]=value;
 
-    if(side==="home"){
-        matches[index].homeGoals=value;
-    }else{
-        matches[index].awayGoals=value;
-    }
-
-    updateTable();
+updateTable();
+save();
 }
 
 function updateTable(){
 
-    let table={};
+let table={};
 
-    players.forEach(player=>{
+players.forEach(p=>{
+table[p]={
+points:0,
+gd:0
+};
+});
 
-        table[player]={
-            points:0,
-            gd:0
-        };
+matches.forEach(match=>{
 
-    });
+if(match.homeGoals!=="" && match.awayGoals!==""){
 
-    matches.forEach(match=>{
+let h=parseInt(match.homeGoals);
+let a=parseInt(match.awayGoals);
 
-        if(
-            match.homeGoals !== null &&
-            match.awayGoals !== null
-        ){
+table[match.home].gd+=h-a;
+table[match.away].gd+=a-h;
 
-            table[match.home].gd +=
-            match.homeGoals-match.awayGoals;
-
-            table[match.away].gd +=
-            match.awayGoals-match.homeGoals;
-
-            if(match.homeGoals>match.awayGoals){
-
-                table[match.home].points+=3;
-
-            }else if(match.awayGoals>match.homeGoals){
-
-                table[match.away].points+=3;
-
-            }else{
-
-                table[match.home].points+=1;
-                table[match.away].points+=1;
-
-            }
-
-        }
-
-    });
-
-    let sorted=Object.entries(table).sort((a,b)=>{
-
-        if(b[1].points!==a[1].points){
-            return b[1].points-a[1].points;
-        }
-
-        return b[1].gd-a[1].gd;
-
-    });
-
-    let html="";
-
-    sorted.forEach(([player,data])=>{
-
-        html+=`
-        <tr>
-            <td>${player}</td>
-            <td>${data.points}</td>
-            <td>${data.gd}</td>
-        </tr>
-        `;
-
-    });
-
-    document.getElementById("standings").innerHTML=html;
-
-    if(sorted.length>0){
-
-        document.getElementById("winner").innerHTML=
-        "👑 Nummer 1: " +
-        sorted[0][0] +
-        " (" +
-        sorted[0][1].points +
-        " point)";
-    }
+if(h>a){
+table[match.home].points+=3;
 }
+else if(a>h){
+table[match.away].points+=3;
+}
+else{
+table[match.home].points+=1;
+table[match.away].points+=1;
+}
+
+}
+
+});
+
+const sorted=Object.entries(table).sort((a,b)=>{
+
+if(b[1].points!==a[1].points)
+return b[1].points-a[1].points;
+
+return b[1].gd-a[1].gd;
+
+});
+
+let html="";
+
+sorted.forEach(([player,data],index)=>{
+
+let cls="";
+
+if(index===0) cls="gold";
+if(index===1) cls="silver";
+if(index===2) cls="bronze";
+
+html+=`
+<tr class="${cls}">
+<td>${index+1}</td>
+<td>${player}</td>
+<td>${data.points}</td>
+<td>${data.gd}</td>
+</tr>
+`;
+
+});
+
+document.getElementById("standings").innerHTML=html;
+
+if(sorted.length){
+
+document.getElementById("winner").innerHTML=
+"👑 Førsteplads: "+sorted[0][0];
+
+}
+
+}
+
+load();
 
 </script>
 
