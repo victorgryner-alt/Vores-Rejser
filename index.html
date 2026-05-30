@@ -1,179 +1,318 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vores Rejser</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIFA Turnering</title>
+
+<style>
+body{
+    font-family:Arial,sans-serif;
+    background:#1a1a1a;
+    color:white;
+    max-width:1200px;
+    margin:auto;
+    padding:20px;
+}
+
+h1,h2{
+    text-align:center;
+}
+
+button{
+    padding:12px 20px;
+    font-size:18px;
+    cursor:pointer;
+    display:block;
+    margin:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+    background:white;
+    color:black;
+}
+
+th,td{
+    border:1px solid #ccc;
+    padding:10px;
+    text-align:center;
+}
+
+input{
+    width:60px;
+    text-align:center;
+}
+
+#winner{
+    text-align:center;
+    font-size:28px;
+    color:gold;
+    margin:20px;
+}
+</style>
 </head>
+<body>
 
-<body class="bg-gray-100">
+<h1>🏆 FIFA Turnering</h1>
 
-<!-- MUSIC -->
-<audio id="bgMusic" loop>
-  <source src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_d875a1f2c2.mp3?filename=soft-piano-ambient-121534.mp3" type="audio/mpeg">
-</audio>
+<button onclick="startTournament()">Start Turnering</button>
 
-<button onclick="toggleMusic()" class="fixed bottom-6 right-6 bg-black text-white px-4 py-3 rounded-full shadow-xl z-50">
-  🎵 Musik
-</button>
+<div id="winner"></div>
 
-<!-- HERO -->
-<section class="min-h-screen bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 text-white flex flex-col items-center justify-center text-center px-6">
-  <h1 class="text-6xl md:text-8xl font-extrabold mb-6">Vores Rejser</h1>
-  <p class="text-xl md:text-2xl max-w-2xl opacity-90">Swipe, klik og oplev vores rejser 🌍</p>
-</section>
+<h2>Hold</h2>
+<table>
+<thead>
+<tr>
+<th>Spiller</th>
+<th>Hold</th>
+</tr>
+</thead>
+<tbody id="teams"></tbody>
+</table>
 
-<!-- DESTINATIONS -->
-<section class="max-w-6xl mx-auto py-16 px-6">
-  <h2 class="text-4xl font-bold text-center mb-10">Destinationer</h2>
+<h2>Kampe</h2>
+<table>
+<thead>
+<tr>
+<th>Hjemme</th>
+<th>Mål</th>
+<th>Mål</th>
+<th>Ude</th>
+</tr>
+</thead>
+<tbody id="matches"></tbody>
+</table>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-    <div onclick="openGallery('ny')" class="cursor-pointer bg-white rounded-3xl shadow-xl overflow-hidden hover:scale-105 transition">
-      <img class="h-64 w-full object-cover" src="https://images.unsplash.com/photo-1499092346589-b9b6be3e94b?q=80&w=1200&auto=format&fit=crop" />
-      <div class="p-6"><h3 class="text-3xl font-bold">New York</h3><p>Juli 2024</p></div>
-    </div>
-
-    <div onclick="openGallery('miami')" class="cursor-pointer bg-white rounded-3xl shadow-xl overflow-hidden hover:scale-105 transition">
-      <img class="h-64 w-full object-cover" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop" />
-      <div class="p-6"><h3 class="text-3xl font-bold">Miami</h3><p>August 2024</p></div>
-    </div>
-
-    <div onclick="openGallery('frankrig')" class="cursor-pointer bg-white rounded-3xl shadow-xl overflow-hidden hover:scale-105 transition">
-      <img class="h-64 w-full object-cover" src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1200&auto=format&fit=crop" />
-      <div class="p-6"><h3 class="text-3xl font-bold">Frankrig</h3><p>Juni 2023</p></div>
-    </div>
-
-    <div onclick="openGallery('kroatien')" class="cursor-pointer bg-white rounded-3xl shadow-xl overflow-hidden hover:scale-105 transition">
-      <img class="h-64 w-full object-cover" src="https://images.unsplash.com/photo-1555990538-1730d2f0b7c4?q=80&w=1200&auto=format&fit=crop" />
-      <div class="p-6"><h3 class="text-3xl font-bold">Kroatien</h3><p>Juli 2023</p></div>
-    </div>
-
-  </div>
-</section>
-
-<!-- MODAL -->
-<div id="modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-6 z-50">
-
-  <div class="bg-white max-w-5xl w-full rounded-2xl overflow-hidden relative">
-
-    <button onclick="closeGallery()" class="absolute top-4 right-4 text-black text-2xl">✖</button>
-
-    <div class="p-6">
-      <h2 id="modalTitle" class="text-3xl font-bold"></h2>
-      <p id="modalDate" class="text-gray-500 mb-4"></p>
-
-      <!-- SWIPE IMAGE -->
-      <div class="relative">
-        <img id="modalImage" class="w-full h-96 object-cover rounded-xl" />
-
-        <button onclick="prevImage()" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black text-white px-3 py-2 rounded-full">‹</button>
-        <button onclick="nextImage()" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black text-white px-3 py-2 rounded-full">›</button>
-      </div>
-
-      <!-- MAP -->
-      <div class="mt-6">
-        <iframe id="map" class="w-full h-64 rounded-xl" loading="lazy"></iframe>
-      </div>
-
-    </div>
-
-  </div>
-</div>
+<h2>Stilling</h2>
+<table>
+<thead>
+<tr>
+<th>Spiller</th>
+<th>Point</th>
+<th>Målscore</th>
+</tr>
+</thead>
+<tbody id="standings"></tbody>
+</table>
 
 <script>
-let currentGallery = null;
-let currentIndex = 0;
 
-const galleries = {
-  ny: {
-    title: "New York",
-    date: "Juli 2024",
-    images: [
-      "https://images.unsplash.com/photo-1522083165195-3424ed129620",
-      "https://images.unsplash.com/photo-1526401281623-3596d0b6a2b0",
-      "https://images.unsplash.com/photo-1485871981521-5b1fd3805eee"
-    ],
-    map: "https://www.google.com/maps?q=New+York&output=embed"
-  },
-  miami: {
-    title: "Miami",
-    date: "August 2024",
-    images: [
-      "https://images.unsplash.com/photo-1501117716987-c8e1ecb2102c",
-      "https://images.unsplash.com/photo-1506929562872-bb421503ef21",
-      "https://images.unsplash.com/photo-1506744038136-46273834b3fb"
-    ],
-    map: "https://www.google.com/maps?q=Miami&output=embed"
-  },
-  frankrig: {
-    title: "Frankrig",
-    date: "Juni 2023",
-    images: [
-      "https://images.unsplash.com/photo-1499856871958-5b9627545d1a",
-      "https://images.unsplash.com/photo-1502602898657-3e91760cbb34"
-    ],
-    map: "https://www.google.com/maps?q=France&output=embed"
-  },
-  kroatien: {
-    title: "Kroatien",
-    date: "Juli 2023",
-    images: [
-      "https://images.unsplash.com/photo-1500375592092-40eb2168fd21",
-      "https://images.unsplash.com/photo-1501785888041-af3ef285b470"
-    ],
-    map: "https://www.google.com/maps?q=Croatia&output=embed"
-  }
-};
+const players = [
+"Bertel",
+"Victor",
+"Aron",
+"Kasper",
+"Mathias",
+"Marcus"
+];
 
-function openGallery(key) {
-  currentGallery = galleries[key];
-  currentIndex = 0;
+const fifaTeams = [
+"Real Madrid",
+"Barcelona",
+"Liverpool",
+"Manchester City",
+"Arsenal",
+"PSG",
+"Bayern München",
+"Chelsea",
+"Juventus",
+"Inter",
+"AC Milan",
+"Dortmund"
+];
 
-  document.getElementById("modal").classList.remove("hidden");
-  document.getElementById("modalTitle").innerText = currentGallery.title;
-  document.getElementById("modalDate").innerText = currentGallery.date;
+let assignedTeams = {};
+let matches = [];
 
-  document.getElementById("map").src = currentGallery.map;
-
-  updateImage();
+function shuffle(array){
+    for(let i=array.length-1;i>0;i--){
+        let j=Math.floor(Math.random()*(i+1));
+        [array[i],array[j]]=[array[j],array[i]];
+    }
 }
 
-function updateImage() {
-  document.getElementById("modalImage").src = currentGallery.images[currentIndex];
+function startTournament(){
+
+    assignedTeams = {};
+    matches = [];
+
+    let teams = [...fifaTeams];
+    shuffle(teams);
+
+    players.forEach((player,index)=>{
+        assignedTeams[player]=teams[index];
+    });
+
+    renderTeams();
+
+    for(let i=0;i<players.length;i++){
+        for(let j=i+1;j<players.length;j++){
+
+            matches.push({
+                home:players[i],
+                away:players[j],
+                homeGoals:null,
+                awayGoals:null
+            });
+
+        }
+    }
+
+    shuffle(matches);
+
+    renderMatches();
+    updateTable();
 }
 
-function nextImage() {
-  currentIndex = (currentIndex + 1) % currentGallery.images.length;
-  updateImage();
+function renderTeams(){
+
+    let html="";
+
+    players.forEach(player=>{
+
+        html+=`
+        <tr>
+            <td>${player}</td>
+            <td>${assignedTeams[player]}</td>
+        </tr>
+        `;
+
+    });
+
+    document.getElementById("teams").innerHTML=html;
 }
 
-function prevImage() {
-  currentIndex = (currentIndex - 1 + currentGallery.images.length) % currentGallery.images.length;
-  updateImage();
+function renderMatches(){
+
+    let html="";
+
+    matches.forEach((match,index)=>{
+
+        html+=`
+        <tr>
+            <td>${match.home} (${assignedTeams[match.home]})</td>
+
+            <td>
+            <input
+            type="number"
+            min="0"
+            onchange="setScore(${index},'home',this.value)">
+            </td>
+
+            <td>
+            <input
+            type="number"
+            min="0"
+            onchange="setScore(${index},'away',this.value)">
+            </td>
+
+            <td>${match.away} (${assignedTeams[match.away]})</td>
+        </tr>
+        `;
+
+    });
+
+    document.getElementById("matches").innerHTML=html;
 }
 
-function closeGallery() {
-  document.getElementById("modal").classList.add("hidden");
+function setScore(index,side,value){
+
+    value=parseInt(value);
+
+    if(side==="home"){
+        matches[index].homeGoals=value;
+    }else{
+        matches[index].awayGoals=value;
+    }
+
+    updateTable();
 }
 
-function toggleMusic() {
-  const music = document.getElementById("bgMusic");
-  if (music.paused) music.play();
-  else music.pause();
+function updateTable(){
+
+    let table={};
+
+    players.forEach(player=>{
+
+        table[player]={
+            points:0,
+            gd:0
+        };
+
+    });
+
+    matches.forEach(match=>{
+
+        if(
+            match.homeGoals !== null &&
+            match.awayGoals !== null
+        ){
+
+            table[match.home].gd +=
+            match.homeGoals-match.awayGoals;
+
+            table[match.away].gd +=
+            match.awayGoals-match.homeGoals;
+
+            if(match.homeGoals>match.awayGoals){
+
+                table[match.home].points+=3;
+
+            }else if(match.awayGoals>match.homeGoals){
+
+                table[match.away].points+=3;
+
+            }else{
+
+                table[match.home].points+=1;
+                table[match.away].points+=1;
+
+            }
+
+        }
+
+    });
+
+    let sorted=Object.entries(table).sort((a,b)=>{
+
+        if(b[1].points!==a[1].points){
+            return b[1].points-a[1].points;
+        }
+
+        return b[1].gd-a[1].gd;
+
+    });
+
+    let html="";
+
+    sorted.forEach(([player,data])=>{
+
+        html+=`
+        <tr>
+            <td>${player}</td>
+            <td>${data.points}</td>
+            <td>${data.gd}</td>
+        </tr>
+        `;
+
+    });
+
+    document.getElementById("standings").innerHTML=html;
+
+    if(sorted.length>0){
+
+        document.getElementById("winner").innerHTML=
+        "👑 Nummer 1: " +
+        sorted[0][0] +
+        " (" +
+        sorted[0][1].points +
+        " point)";
+    }
 }
 
-// SWIPE SUPPORT
-let startX = 0;
-document.addEventListener("touchstart", e => startX = e.touches[0].clientX);
-document.addEventListener("touchend", e => {
-  let endX = e.changedTouches[0].clientX;
-  if (!currentGallery) return;
-
-  if (startX - endX > 50) nextImage();
-  else if (endX - startX > 50) prevImage();
-});
 </script>
 
 </body>
