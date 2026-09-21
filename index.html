@@ -1,338 +1,368 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="da">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>System Security</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Loading...</title>
 
 <style>
-* {
-    box-sizing: border-box;
+*{box-sizing:border-box}
+html,body{
+  width:100%;height:100%;margin:0;overflow:hidden;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#050505;color:white;
 }
 
-body {
-    margin: 0;
-    background: #020402;
-    color: #00ff66;
-    font-family: "Courier New", monospace;
-    overflow: hidden;
+#start{
+  position:fixed;inset:0;z-index:99999;
+  display:flex;align-items:center;justify-content:center;
+  background:#050505;
 }
 
-#matrix {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    opacity: .16;
+.startBox{
+  text-align:center;
+  padding:35px;
+  border:1px solid #333;
+  border-radius:20px;
+  background:#111;
+  width:min(430px,90%);
 }
 
-.container {
-    position: relative;
-    z-index: 2;
-    width: min(900px, 92%);
-    margin: 40px auto;
+button{
+  border:0;
+  padding:16px 28px;
+  border-radius:12px;
+  font-size:18px;
+  font-weight:800;
+  cursor:pointer;
 }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid #00ff66;
-    padding-bottom: 12px;
-    margin-bottom: 18px;
+.window{
+  position:absolute;
+  width:300px;
+  min-height:130px;
+  border:3px solid #111;
+  background:#eee;
+  color:#111;
+  box-shadow:10px 10px 0 rgba(0,0,0,.5);
+  z-index:10;
 }
 
-.logo {
-    font-size: 20px;
-    font-weight: bold;
+.title{
+  background:#1267d6;
+  color:white;
+  padding:7px;
+  font-weight:bold;
+  display:flex;
+  justify-content:space-between;
 }
 
-.status {
-    color: #ff3b3b;
-    animation: blink 1s infinite;
+.content{
+  padding:15px;
+  font-weight:bold;
+  text-align:center;
 }
 
-.terminal {
-    background: rgba(0, 8, 0, .92);
-    border: 1px solid #00ff66;
-    border-radius: 8px;
-    padding: 20px;
-    height: 480px;
-    overflow: hidden;
-    box-shadow: 0 0 30px rgba(0,255,100,.15);
+.fakeClose{
+  background:#e22;
+  padding:1px 7px;
 }
 
-#lineContainer {
-    height: 370px;
-    overflow: hidden;
+#warning{
+  position:fixed;
+  top:15px;left:50%;
+  transform:translateX(-50%);
+  font-family:monospace;
+  font-size:18px;
+  color:#0f0;
+  z-index:9000;
+  text-shadow:0 0 10px #0f0;
 }
 
-.line {
-    margin: 7px 0;
-    font-size: 14px;
+#counter{
+  position:fixed;
+  bottom:15px;
+  right:15px;
+  z-index:9000;
+  background:#000;
+  color:#0f0;
+  border:1px solid #0f0;
+  padding:12px;
+  font-family:monospace;
 }
 
-.red {
-    color: #ff4242;
+#final{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:999999;
+  background:#000;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
 }
 
-.yellow {
-    color: #ffe600;
+#final h1{
+  font-size:clamp(45px,10vw,130px);
+  margin:0;
+  animation:rainbow .4s infinite;
 }
 
-.progressBox {
-    margin-top: 20px;
+#final p{
+  font-size:20px;
 }
 
-.progress {
-    height: 14px;
-    border: 1px solid #00ff66;
-    width: 100%;
+@keyframes rainbow{
+  0%{color:red}
+  20%{color:yellow}
+  40%{color:lime}
+  60%{color:cyan}
+  80%{color:#f0f}
+  100%{color:red}
 }
 
-.bar {
-    height: 100%;
-    width: 0%;
-    background: #00ff66;
-    transition: width .2s;
+.shake{
+  animation:shake .08s infinite;
 }
 
-.progressText {
-    margin-top: 7px;
-    font-size: 13px;
+@keyframes shake{
+  0%{transform:translate(0,0)}
+  25%{transform:translate(7px,-5px)}
+  50%{transform:translate(-6px,6px)}
+  75%{transform:translate(5px,4px)}
+  100%{transform:translate(-4px,-5px)}
 }
 
-.final {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 20;
-    background: black;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-.final h1 {
-    color: #00ff66;
-    font-size: clamp(35px, 8vw, 90px);
-    margin: 0;
-}
-
-.final p {
-    color: white;
-    font-family: Arial, sans-serif;
-    font-size: 20px;
-}
-
-@keyframes blink {
-    50% { opacity: .25; }
-}
-
-@media(max-width:600px) {
-    .container {
-        margin-top: 20px;
-    }
-
-    .terminal {
-        height: 520px;
-    }
-
-    .line {
-        font-size: 12px;
-    }
+.emoji{
+  position:absolute;
+  font-size:70px;
+  z-index:5;
+  user-select:none;
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="matrix"></canvas>
-
-<div class="container">
-
-    <div class="header">
-        <div class="logo">SECURE_TERMINAL v4.8.2</div>
-        <div class="status">● CONNECTION ACTIVE</div>
-    </div>
-
-    <div class="terminal">
-
-        <div id="lineContainer"></div>
-
-        <div class="progressBox">
-            <div class="progress">
-                <div class="bar" id="bar"></div>
-            </div>
-
-            <div class="progressText" id="progressText">
-                Initializing...
-            </div>
-        </div>
-
-    </div>
+<div id="start">
+  <div class="startBox">
+    <h1>⚠️ VIDEO READY</h1>
+    <p>Tryk for at fortsætte</p>
+    <button onclick="START()">AFSPIL</button>
+  </div>
 </div>
 
-<div class="final" id="final">
-    <div>
-        <h1>PRANKED 😭🙏</h1>
-        <p>Bror troede lige hans computer var cooked 💀</p>
-        <p style="color:#777;font-size:14px;">
-            Ingen data blev indsamlet. Det var bare en prank.
-        </p>
-    </div>
+<div id="warning"></div>
+
+<div id="counter">
+  WINDOWS: <span id="count">0</span>
+</div>
+
+<div id="final">
+  <div>
+    <h1>PRANKED 😭🙏</h1>
+    <p>Bradar troede computeren var cooked ☠️</p>
+    <p style="color:#777;font-size:14px">
+      Ingen filer eller oplysninger blev hentet.
+    </p>
+  </div>
 </div>
 
 <script>
 
-// FAKE TERMINAL DATA ONLY
-const messages = [
-    "[SYSTEM] Establishing secure connection...",
-    "[OK] Connection established.",
-    "[SYSTEM] Detecting operating system...",
-    "[OK] Device detected.",
-    "[SYSTEM] Starting security scan...",
-    "[SCAN] Searching browser database...",
-    "[SCAN] Checking saved credentials...",
-    "[FOUND] 7 browser sessions detected.",
-    "[FOUND] 14 cached login entries.",
-    "[SCAN] Checking local storage...",
-    "[FOUND] Documents directory detected.",
-    "[SCAN] Searching authentication tokens...",
-    "[FOUND] Discord session: ***************",
-    "[FOUND] Google account: ***************",
-    "[FOUND] Roblox session: ***************",
-    "[SYSTEM] Preparing encrypted archive...",
-    "[UPLOAD] Connecting remote server...",
-    "[UPLOAD] Sending package...",
-    "[WARNING] Security software response detected.",
-    "[BYPASS] Attempting bypass...",
-    "[OK] Bypass successful.",
-    "[UPLOAD] Finalizing transfer..."
+let started=false;
+let windows=[];
+let count=0;
+
+const messages=[
+ "SYSTEM32 HAS LEFT THE CHAT ☠️",
+ "VIRUS DETECTED 😭",
+ "Deleting homework...",
+ "Downloading 847 viruses...",
+ "Bro what did you click 💀",
+ "CPU IS COOKED 🔥",
+ "Windows Defender gave up.",
+ "Sending browser history to mom...",
+ "Robux balance detected: 3 💔",
+ "Skill issue detected.",
+ "YOUR PC IS MINE 😈",
+ "Uploading embarrassing screenshots...",
+ "FBI CONNECTION ESTABLISHED",
+ "ERROR ERROR ERROR ERROR",
+ "Bro close the tab 😭🙏",
+ "Too late lil bro ☠️"
 ];
 
-const container = document.getElementById("lineContainer");
-const bar = document.getElementById("bar");
-const progressText = document.getElementById("progressText");
+const emojis=[
+ "😭","☠️","🙏","💀","🔥","💔","🤡","😈"
+];
 
-let index = 0;
+function START(){
 
-function addLine() {
+ if(started)return;
+ started=true;
 
-    if(index >= messages.length) {
-        startUpload();
-        return;
-    }
+ document.getElementById("start").remove();
 
-    const div = document.createElement("div");
-    div.className = "line";
+ document.documentElement.requestFullscreen?.().catch(()=>{});
 
-    if(messages[index].includes("WARNING")) {
-        div.classList.add("red");
-    }
+ document.body.classList.add("shake");
 
-    if(messages[index].includes("FOUND")) {
-        div.classList.add("yellow");
-    }
+ createWindows();
 
-    div.textContent = "> " + messages[index];
+ chaosBackground();
 
-    container.appendChild(div);
-    container.scrollTop = container.scrollHeight;
+ warningText();
 
-    index++;
-
-    setTimeout(addLine, 250 + Math.random() * 450);
+ setTimeout(finalScreen,15000);
 }
 
-setTimeout(addLine, 800);
+function createWindows(){
 
+ let interval=setInterval(()=>{
 
-// FAKE UPLOAD
+   if(count>=35){
+      clearInterval(interval);
+      return;
+   }
 
-function startUpload() {
+   createWindow();
+   count++;
 
-    let percent = 0;
+   document.getElementById("count").textContent=count;
 
-    const upload = setInterval(() => {
-
-        percent += Math.floor(Math.random() * 7) + 1;
-
-        if(percent > 100) percent = 100;
-
-        bar.style.width = percent + "%";
-        progressText.textContent =
-            "Uploading encrypted files... " + percent + "%";
-
-        if(percent >= 100) {
-
-            clearInterval(upload);
-
-            progressText.textContent = "TRANSFER COMPLETE";
-
-            setTimeout(() => {
-                document.getElementById("final").style.display = "flex";
-            }, 1800);
-        }
-
-    }, 180);
+ },250);
 }
 
+function createWindow(){
 
-// MATRIX BACKGROUND
+ const win=document.createElement("div");
+ win.className="window";
 
-const canvas = document.getElementById("matrix");
-const ctx = canvas.getContext("2d");
+ win.style.left=
+ Math.random()*(innerWidth-300)+"px";
 
-function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+ win.style.top=
+ Math.random()*(innerHeight-150)+"px";
+
+ win.innerHTML=`
+   <div class="title">
+      SYSTEM ERROR
+      <span class="fakeClose">X</span>
+   </div>
+
+   <div class="content">
+      ${messages[Math.floor(Math.random()*messages.length)]}
+      <br><br>
+      <button>OK</button>
+   </div>
+ `;
+
+ document.body.appendChild(win);
+
+ let dx=(Math.random()*10)+4;
+ let dy=(Math.random()*10)+4;
+
+ if(Math.random()>.5)dx=-dx;
+ if(Math.random()>.5)dy=-dy;
+
+ let x=parseFloat(win.style.left);
+ let y=parseFloat(win.style.top);
+
+ function move(){
+
+   if(!document.body.contains(win))return;
+
+   x+=dx;
+   y+=dy;
+
+   if(x<=0 || x+300>=innerWidth)
+      dx*=-1;
+
+   if(y<=0 || y+150>=innerHeight)
+      dy*=-1;
+
+   win.style.left=x+"px";
+   win.style.top=y+"px";
+
+   requestAnimationFrame(move);
+ }
+
+ move();
+
+ win.querySelector("button").onclick=()=>{
+    createWindow();
+    createWindow();
+    createWindow();
+ };
+
+ win.querySelector(".fakeClose").onclick=()=>{
+    createWindow();
+    createWindow();
+ };
 }
 
-resize();
+function chaosBackground(){
 
-window.addEventListener("resize", resize);
+ setInterval(()=>{
 
-const chars =
-"01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&@";
+   document.body.style.background=
+   `hsl(${Math.random()*360},100%,${Math.random()*20+5}%)`;
 
-const fontSize = 14;
+   const e=document.createElement("div");
 
-let columns =
-Math.floor(canvas.width / fontSize);
+   e.className="emoji";
 
-let drops =
-Array(columns).fill(1);
+   e.textContent=
+   emojis[Math.floor(Math.random()*emojis.length)];
 
-function drawMatrix() {
+   e.style.left=Math.random()*innerWidth+"px";
+   e.style.top=Math.random()*innerHeight+"px";
 
-    ctx.fillStyle = "rgba(0,0,0,.08)";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
+   document.body.appendChild(e);
 
-    ctx.fillStyle = "#00ff66";
-    ctx.font = fontSize + "px monospace";
+   setTimeout(()=>e.remove(),1000);
 
-    for(let i = 0; i < drops.length; i++) {
-
-        const char =
-            chars[Math.floor(Math.random()*chars.length)];
-
-        ctx.fillText(
-            char,
-            i * fontSize,
-            drops[i] * fontSize
-        );
-
-        if(
-            drops[i] * fontSize > canvas.height &&
-            Math.random() > .975
-        ) {
-            drops[i] = 0;
-        }
-
-        drops[i]++;
-    }
+ },150);
 }
 
-setInterval(drawMatrix, 40);
+function warningText(){
+
+ const warning=document.getElementById("warning");
+
+ const texts=[
+   "INITIALIZING...",
+   "ACCESSING COMPUTER...",
+   "SEARCHING FILES...",
+   "PASSWORDS FOUND...",
+   "UPLOADING...",
+   "DO NOT TURN OFF COMPUTER ☠️"
+ ];
+
+ let i=0;
+
+ setInterval(()=>{
+
+   warning.textContent=texts[i%texts.length];
+   i++;
+
+ },900);
+}
+
+function finalScreen(){
+
+ document.body.classList.remove("shake");
+
+ document.querySelectorAll(".window,.emoji")
+ .forEach(x=>x.remove());
+
+ document.getElementById("warning").remove();
+ document.getElementById("counter").remove();
+
+ document.body.style.background="#000";
+
+ document.getElementById("final").style.display="flex";
+}
 
 </script>
 
