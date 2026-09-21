@@ -574,6 +574,10 @@ function init(){
     }
 
 
+    /* CITY MAP: houses, sidewalks, intersections, trees */
+    createCity();
+    createPolice();
+
     createBike();
 
     camera.position.set(
@@ -618,6 +622,73 @@ function createStreetLight(x,z){
     scene.add(lamp);
 }
 
+
+
+/* ---------------- CITY MAP ---------------- */
+let policeCars=[];
+let wantedLevel=0;
+let policeTimer=0;
+
+function box(w,h,d,color,x,y,z){
+    const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshStandardMaterial({color,roughness:.75}));
+    m.position.set(x,y,z); m.castShadow=true; m.receiveShadow=true; scene.add(m); return m;
+}
+
+function createCity(){
+    // sidewalks + houses down both sides
+    for(let i=0;i<34;i++){
+        const z=-i*27-8;
+        box(4,.16,20,0xb7b7b7,-11,.05,z);
+        box(4,.16,20,0xb7b7b7, 11,.05,z);
+        const left=box(7,3.8,9, i%2?0xd9c2a7:0xc9d5df,-17,1.9,z-3);
+        const right=box(7,3.8,9,i%3?0xe0d0bb:0xbcc8b5,17,1.9,z+3);
+        // roofs
+        box(7.5,.35,9.5,0x4a3a35,-17,4,z-3).rotation.z=.02;
+        box(7.5,.35,9.5,0x3e4147,17,4,z+3).rotation.z=-.02;
+        // windows
+        for(const x of [-19,-15,15,19]) box(1.1,1.1,.08,0x8fc9ff,x,2.3,z+(x<0?1.55:7.55));
+        // trees
+        if(i%2===0){
+            box(.35,2,.35,0x6b4428,-9,1,z-8);
+            const crown=new THREE.Mesh(new THREE.SphereGeometry(1.25,10,8),new THREE.MeshStandardMaterial({color:0x347a3b})); crown.position.set(-9,2.7,z-8); scene.add(crown);
+        }
+        // cross roads every 5 blocks
+        if(i%5===4){
+            box(70,.025,10,0x292c31,0,.015,z-13);
+            for(let x=-30;x<=30;x+=7) box(3,.035,.18,0xffffff,x,.04,z-13);
+        }
+    }
+}
+
+function createPoliceCar(x,z){
+    const g=new THREE.Group();
+    const body=new THREE.Mesh(new THREE.BoxGeometry(1.8,.65,3.5),new THREE.MeshStandardMaterial({color:0x151922,metalness:.5,roughness:.35}));
+    body.position.y=.62; g.add(body);
+    const cabin=new THREE.Mesh(new THREE.BoxGeometry(1.55,.55,1.65),new THREE.MeshStandardMaterial({color:0x27394c})); cabin.position.set(0,1.12,.15); g.add(cabin);
+    const lightL=new THREE.Mesh(new THREE.BoxGeometry(.65,.12,.22),new THREE.MeshStandardMaterial({color:0x2266ff,emissive:0x2266ff,emissiveIntensity:3})); lightL.position.set(-.36,1.48,.1); g.add(lightL);
+    const lightR=new THREE.Mesh(new THREE.BoxGeometry(.65,.12,.22),new THREE.MeshStandardMaterial({color:0xff2222,emissive:0xff2222,emissiveIntensity:3})); lightR.position.set(.36,1.48,.1); g.add(lightR);
+    g.position.set(x,0,z); scene.add(g); policeCars.push(g); return g;
+}
+function createPolice(){ createPoliceCar(-3,-65); createPoliceCar(3,-150); }
+
+function updatePolice(movement){
+    policeTimer++;
+    if(speed>55) wantedLevel=Math.min(5, Math.max(wantedLevel,1));
+    if(speed>70) wantedLevel=Math.min(5, Math.max(wantedLevel,2));
+    if(wheelieAngle>.25 && speed>35) wantedLevel=Math.min(5, Math.max(wantedLevel,2));
+    if(wantedLevel>0 && policeTimer%900===0) wantedLevel=Math.min(5,wantedLevel+1);
+    document.getElementById('wanted').innerText='★'.repeat(wantedLevel)+'☆'.repeat(5-wantedLevel);
+    policeCars.forEach((p,idx)=>{
+        p.position.z += movement * (1.08 + wantedLevel*.035);
+        // chase toward player lane
+        p.position.x += (bike.position.x-p.position.x)*.006*(wantedLevel+1);
+        p.rotation.y=Math.sin(performance.now()*.012+idx)*.025;
+        // flashing lights feel
+        p.children.slice(-2).forEach((l,j)=>l.visible=Math.floor(performance.now()/180+j)%2===0);
+        if(p.position.z>12) p.position.z=-170-Math.random()*160;
+        if(Math.abs(p.position.z)<2.4 && Math.abs(p.position.x-bike.position.x)<1.5 && speed>10) crash();
+    });
+}
 
 /* ---------------- BIKE ---------------- */
 
@@ -756,6 +827,19 @@ function createBike(){
 
     bike.add(bar);
 
+
+
+    /* BETTER BIKE DETAILS */
+    const motor=new THREE.Mesh(new THREE.CylinderGeometry(.28,.28,.42,18),new THREE.MeshStandardMaterial({color:0x30343b,metalness:.8,roughness:.25}));
+    motor.rotation.z=Math.PI/2; motor.position.set(0,.92,.28); bike.add(motor);
+    const headlight=new THREE.Mesh(new THREE.BoxGeometry(.46,.28,.16),new THREE.MeshStandardMaterial({color:0xeaf6ff,emissive:0xcdeaff,emissiveIntensity:2.5}));
+    headlight.position.set(0,1.62,-1.02); bike.add(headlight);
+    const rearFender=new THREE.Mesh(new THREE.BoxGeometry(.48,.08,.95),new THREE.MeshStandardMaterial({color:bikeColor,metalness:.45})); rearFender.position.set(0,1.32,1.02); rearFender.rotation.x=-.12; bike.add(rearFender);
+    const frontFender=rearFender.clone(); frontFender.position.set(0,1.18,-1.12); frontFender.rotation.x=.18; bike.add(frontFender);
+    // swingarm
+    for(const x of [-.2,.2]){ const arm=new THREE.Mesh(new THREE.BoxGeometry(.07,.08,1.15),new THREE.MeshStandardMaterial({color:0x777b82,metalness:.8})); arm.position.set(x,.78,.48); arm.rotation.x=-.12; bike.add(arm); }
+    // front number plate
+    const plate=new THREE.Mesh(new THREE.BoxGeometry(.62,.65,.08),new THREE.MeshStandardMaterial({color:selectedBike==='talaria'?0x111111:0xeeeeee})); plate.position.set(0,1.48,-.92); plate.rotation.x=-.15; bike.add(plate);
 
     bike.position.y=0;
 
@@ -938,6 +1022,8 @@ function updateGame(){
 
     const movement=
         speed*.015;
+
+    updatePolice(movement);
 
     scene.children.forEach(obj=>{
 
@@ -1167,6 +1253,8 @@ window.resetGame=function(){
     combo=1;
     wheelieAngle=0;
     steering=0;
+    wantedLevel=0;
+    policeTimer=0;
 
     bike.rotation.set(0,0,0);
     bike.position.x=0;
