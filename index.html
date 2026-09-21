@@ -2,1305 +2,337 @@
 <html lang="da">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Wheelie Legends</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Security</title>
 
 <style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-    user-select:none;
+* {
+    box-sizing: border-box;
 }
 
-body{
-    overflow:hidden;
-    background:#05070c;
-    font-family:Arial,Helvetica,sans-serif;
-    color:white;
+body {
+    margin: 0;
+    background: #020402;
+    color: #00ff66;
+    font-family: "Courier New", monospace;
+    overflow: hidden;
 }
 
-canvas{display:block}
-
-/* START MENU */
-#menu{
-    position:fixed;
-    inset:0;
-    z-index:100;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:
-        radial-gradient(circle at 50% 20%,#14284e 0%,transparent 40%),
-        linear-gradient(135deg,#05070c,#090d16);
+#matrix {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    opacity: .16;
 }
 
-.menuBox{
-    width:min(900px,92vw);
-    padding:42px;
-    border:1px solid rgba(255,255,255,.1);
-    border-radius:28px;
-    background:rgba(10,14,23,.82);
-    backdrop-filter:blur(20px);
-    box-shadow:0 30px 100px rgba(0,0,0,.7);
+.container {
+    position: relative;
+    z-index: 2;
+    width: min(900px, 92%);
+    margin: 40px auto;
 }
 
-.logo{
-    font-size:54px;
-    font-weight:900;
-    letter-spacing:-3px;
+.header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #00ff66;
+    padding-bottom: 12px;
+    margin-bottom: 18px;
 }
 
-.logo span{
-    color:#4c8dff;
+.logo {
+    font-size: 20px;
+    font-weight: bold;
 }
 
-.subtitle{
-    color:#8793a8;
-    margin-top:8px;
-    margin-bottom:30px;
+.status {
+    color: #ff3b3b;
+    animation: blink 1s infinite;
 }
 
-input{
-    width:100%;
-    padding:17px;
-    background:#111722;
-    border:1px solid #293247;
-    border-radius:13px;
-    color:white;
-    font-size:16px;
-    outline:none;
-    margin-bottom:20px;
+.terminal {
+    background: rgba(0, 8, 0, .92);
+    border: 1px solid #00ff66;
+    border-radius: 8px;
+    padding: 20px;
+    height: 480px;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(0,255,100,.15);
 }
 
-.bikes{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:16px;
+#lineContainer {
+    height: 370px;
+    overflow: hidden;
 }
 
-.bike{
-    padding:25px;
-    border-radius:18px;
-    background:#101620;
-    border:2px solid transparent;
-    cursor:pointer;
-    transition:.2s;
+.line {
+    margin: 7px 0;
+    font-size: 14px;
 }
 
-.bike:hover{
-    transform:translateY(-4px);
-    background:#151d2b;
+.red {
+    color: #ff4242;
 }
 
-.bike.selected{
-    border-color:#4c8dff;
-    box-shadow:0 0 30px rgba(76,141,255,.2);
+.yellow {
+    color: #ffe600;
 }
 
-.bike h2{
-    font-size:24px;
+.progressBox {
+    margin-top: 20px;
 }
 
-.bike p{
-    color:#7d899c;
-    margin-top:7px;
+.progress {
+    height: 14px;
+    border: 1px solid #00ff66;
+    width: 100%;
 }
 
-.start{
-    width:100%;
-    border:0;
-    margin-top:22px;
-    padding:18px;
-    border-radius:14px;
-    font-size:18px;
-    font-weight:800;
-    color:white;
-    cursor:pointer;
-    background:linear-gradient(90deg,#326cff,#6c42ff);
-    box-shadow:0 10px 35px rgba(55,103,255,.3);
+.bar {
+    height: 100%;
+    width: 0%;
+    background: #00ff66;
+    transition: width .2s;
 }
 
-/* HUD */
-#hud{
-    display:none;
-    position:fixed;
-    inset:0;
-    z-index:10;
-    pointer-events:none;
+.progressText {
+    margin-top: 7px;
+    font-size: 13px;
 }
 
-.top{
-    display:flex;
-    justify-content:space-between;
-    padding:25px;
+.final {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    background: black;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
-.card{
-    background:rgba(6,10,17,.72);
-    backdrop-filter:blur(12px);
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:16px;
-    padding:14px 20px;
+.final h1 {
+    color: #00ff66;
+    font-size: clamp(35px, 8vw, 90px);
+    margin: 0;
 }
 
-.label{
-    color:#7e8a9f;
-    font-size:12px;
-    text-transform:uppercase;
-    letter-spacing:1px;
+.final p {
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 20px;
 }
 
-.value{
-    font-size:25px;
-    font-weight:900;
-    margin-top:2px;
+@keyframes blink {
+    50% { opacity: .25; }
 }
 
-#combo{
-    color:#6aa1ff;
-}
+@media(max-width:600px) {
+    .container {
+        margin-top: 20px;
+    }
 
-.speed{
-    position:absolute;
-    bottom:30px;
-    right:30px;
-    width:160px;
-    height:160px;
-    border-radius:50%;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    background:rgba(5,9,16,.8);
-    border:6px solid #172134;
-    box-shadow:0 20px 50px rgba(0,0,0,.5);
-}
+    .terminal {
+        height: 520px;
+    }
 
-#speedNumber{
-    font-size:46px;
-    font-weight:900;
-}
-
-.kmh{
-    color:#768399;
-    font-size:13px;
-}
-
-.wheelie{
-    position:absolute;
-    left:30px;
-    bottom:30px;
-    width:300px;
-}
-
-.bar{
-    margin-top:8px;
-    height:12px;
-    background:#121a28;
-    border-radius:20px;
-    overflow:hidden;
-}
-
-#balanceBar{
-    width:0%;
-    height:100%;
-    border-radius:20px;
-    background:linear-gradient(90deg,#3e7cff,#995cff);
-}
-
-.controls{
-    position:absolute;
-    bottom:30px;
-    left:50%;
-    transform:translateX(-50%);
-    text-align:center;
-    color:#8490a5;
-    background:rgba(5,9,16,.65);
-    padding:12px 20px;
-    border-radius:12px;
-}
-
-.controls b{color:white}
-
-/* CRASH */
-#crash{
-    position:fixed;
-    inset:0;
-    z-index:200;
-    display:none;
-    align-items:center;
-    justify-content:center;
-    background:rgba(0,0,0,.72);
-    backdrop-filter:blur(8px);
-}
-
-.crashBox{
-    text-align:center;
-}
-
-.crashBox h1{
-    font-size:70px;
-}
-
-.crashBox p{
-    color:#929caf;
-    margin:10px;
-}
-
-.crashBox button{
-    pointer-events:auto;
-    margin-top:15px;
-    border:0;
-    padding:15px 35px;
-    border-radius:12px;
-    color:white;
-    background:#407bff;
-    font-weight:bold;
-    cursor:pointer;
-}
-
-/* LEADERBOARD */
-#leaderboard{
-    position:absolute;
-    right:25px;
-    top:105px;
-    width:260px;
-}
-
-.leaderTitle{
-    font-weight:900;
-    margin-bottom:10px;
-}
-
-.leader{
-    display:flex;
-    justify-content:space-between;
-    padding:8px 0;
-    border-bottom:1px solid rgba(255,255,255,.06);
-    font-size:13px;
-}
-
-@media(max-width:650px){
-    .bikes{grid-template-columns:1fr}
-    .logo{font-size:40px}
-    #leaderboard{display:none}
-    .controls{display:none}
+    .line {
+        font-size: 12px;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<div id="menu">
-    <div class="menuBox">
-        <div class="logo">WHEELIE <span>LEGENDS</span></div>
-        <div class="subtitle">Hold den perfekte wheelie. Slå din highscore.</div>
+<canvas id="matrix"></canvas>
 
-        <input id="username" placeholder="Dit navn..." maxlength="15">
+<div class="container">
 
-        <div class="bikes">
+    <div class="header">
+        <div class="logo">SECURE_TERMINAL v4.8.2</div>
+        <div class="status">● CONNECTION ACTIVE</div>
+    </div>
 
-            <div class="bike selected" data-bike="talaria">
-                <h2>⚡ Talaria XXX</h2>
-                <p>Let • Hurtig acceleration • Nem balance</p>
+    <div class="terminal">
+
+        <div id="lineContainer"></div>
+
+        <div class="progressBox">
+            <div class="progress">
+                <div class="bar" id="bar"></div>
             </div>
 
-            <div class="bike" data-bike="surron">
-                <h2>🔥 Surron LBX</h2>
-                <p>Power • Høj topfart • Mere aggressiv</p>
+            <div class="progressText" id="progressText">
+                Initializing...
             </div>
-
         </div>
 
-        <button class="start" onclick="startGame()">START RIDE</button>
     </div>
 </div>
 
-
-<div id="hud">
-
-    <div class="top">
-
-        <div class="card">
-            <div class="label">Score</div>
-            <div class="value" id="score">0</div>
-        </div>
-
-        <div class="card">
-            <div class="label">Combo</div>
-            <div class="value" id="combo">x1.0</div>
-        </div>
-
-    </div>
-
-
-    <div id="leaderboard" class="card">
-        <div class="leaderTitle">🏆 LEADERBOARD</div>
-        <div id="leaderRows"></div>
-    </div>
-
-
-    <div class="wheelie card">
-        <div class="label">Wheelie balance</div>
-        <div class="bar">
-            <div id="balanceBar"></div>
-        </div>
-    </div>
-
-
-    <div class="controls">
-        <b>W</b> GAS &nbsp;
-        <b>S</b> BRAKE &nbsp;
-        <b>A/D</b> STEER &nbsp;
-        <b>SPACE</b> WHEELIE
-    </div>
-
-
-    <div class="speed">
-        <div id="speedNumber">0</div>
-        <div class="kmh">KM/H</div>
-    </div>
-
-</div>
-
-
-<div id="crash">
-    <div class="crashBox">
-        <h1>CRASH 💀</h1>
-        <p id="finalScore"></p>
-        <button onclick="resetGame()">RIDE AGAIN</button>
+<div class="final" id="final">
+    <div>
+        <h1>PRANKED 😭🙏</h1>
+        <p>Bror troede lige hans computer var cooked 💀</p>
+        <p style="color:#777;font-size:14px;">
+            Ingen data blev indsamlet. Det var bare en prank.
+        </p>
     </div>
 </div>
 
-
-<script type="module">
-
-import * as THREE from
-"https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js";
-
-
-/* ---------------- GAME VARIABLES ---------------- */
-
-let scene;
-let camera;
-let renderer;
-
-let bike;
-let frontWheel;
-let rearWheel;
-
-let speed = 0;
-let wheelieAngle = 0;
-let steering = 0;
-
-let score = 0;
-let combo = 1;
-
-let running = false;
-let crashed = false;
-
-let selectedBike = "talaria";
-
-const keys = {};
-
-window.gameStart = false;
-
-
-/* ---------------- MENU ---------------- */
-
-document.querySelectorAll(".bike").forEach(el=>{
-
-    el.onclick=()=>{
-
-        document.querySelectorAll(".bike")
-        .forEach(x=>x.classList.remove("selected"));
-
-        el.classList.add("selected");
-
-        selectedBike=el.dataset.bike;
-    };
-
-});
-
-
-window.startGame=function(){
-
-    const username =
-    document.getElementById("username").value.trim() || "Rider";
-
-    localStorage.setItem("wheelieUsername",username);
-
-    document.getElementById("menu").style.display="none";
-    document.getElementById("hud").style.display="block";
-
-    init();
-    running=true;
-};
-
-
-const oldName=localStorage.getItem("wheelieUsername");
-
-if(oldName){
-    document.getElementById("username").value=oldName;
-}
-
-
-/* ---------------- THREE JS ---------------- */
-
-function init(){
-
-    scene=new THREE.Scene();
-
-    scene.background=new THREE.Color(0x87b5d9);
-
-    scene.fog=new THREE.Fog(
-        0x87b5d9,
-        80,
-        350
-    );
-
-
-    camera=new THREE.PerspectiveCamera(
-        65,
-        innerWidth/innerHeight,
-        .1,
-        1000
-    );
-
-
-    renderer=new THREE.WebGLRenderer({
-        antialias:true
-    });
-
-    renderer.setPixelRatio(
-        Math.min(devicePixelRatio,2)
-    );
-
-    renderer.setSize(
-        innerWidth,
-        innerHeight
-    );
-
-    renderer.shadowMap.enabled=true;
-
-    document.body.appendChild(renderer.domElement);
-
-
-    /* LIGHT */
-
-    const hemi=new THREE.HemisphereLight(
-        0xffffff,
-        0x445566,
-        2
-    );
-
-    scene.add(hemi);
-
-
-    const sun=new THREE.DirectionalLight(
-        0xffffff,
-        3
-    );
-
-    sun.position.set(30,60,-20);
-
-    sun.castShadow=true;
-
-    scene.add(sun);
-
-
-    /* ROAD */
-
-    const road=new THREE.Mesh(
-        new THREE.PlaneGeometry(18,1000),
-        new THREE.MeshStandardMaterial({
-            color:0x25282d,
-            roughness:.9
-        })
-    );
-
-    road.rotation.x=-Math.PI/2;
-    road.position.z=-400;
-
-    road.receiveShadow=true;
-
-    scene.add(road);
-
-
-    /* GRASS */
-
-    const grass=new THREE.Mesh(
-        new THREE.PlaneGeometry(500,1000),
-        new THREE.MeshStandardMaterial({
-            color:0x3e7040
-        })
-    );
-
-    grass.rotation.x=-Math.PI/2;
-    grass.position.y=-.03;
-    grass.position.z=-400;
-
-    scene.add(grass);
-
-
-    /* ROAD LINES */
-
-    for(let i=0;i<80;i++){
-
-        const line=new THREE.Mesh(
-            new THREE.BoxGeometry(.18,.02,5),
-            new THREE.MeshStandardMaterial({
-                color:0xffffff
-            })
-        );
-
-        line.position.set(
-            0,
-            .02,
-            -i*12
-        );
-
-        scene.add(line);
-    }
-
-
-    /* STREET LIGHTS */
-
-    for(let i=0;i<40;i++){
-
-        createStreetLight(-7,-i*22);
-        createStreetLight(7,-i*22);
-    }
-
-
-    /* CITY MAP: houses, sidewalks, intersections, trees */
-    createCity();
-    createPolice();
-
-    createBike();
-
-    camera.position.set(
-        0,
-        3.5,
-        7
-    );
-
-    updateLeaderboard();
-
-    animate();
-}
-
-
-/* ---------------- STREET ---------------- */
-
-function createStreetLight(x,z){
-
-    const pole=new THREE.Mesh(
-        new THREE.CylinderGeometry(.06,.08,5),
-        new THREE.MeshStandardMaterial({
-            color:0x30343a
-        })
-    );
-
-    pole.position.set(x,2.5,z);
-
-    scene.add(pole);
-
-
-    const lamp=new THREE.Mesh(
-        new THREE.BoxGeometry(.5,.15,.25),
-        new THREE.MeshStandardMaterial({
-            color:0xffffff,
-            emissive:0xffffff,
-            emissiveIntensity:1
-        })
-    );
-
-    lamp.position.set(x,5,z);
-
-    scene.add(lamp);
-}
-
-
-
-/* ---------------- CITY MAP ---------------- */
-let policeCars=[];
-let wantedLevel=0;
-let policeTimer=0;
-
-function box(w,h,d,color,x,y,z){
-    const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshStandardMaterial({color,roughness:.75}));
-    m.position.set(x,y,z); m.castShadow=true; m.receiveShadow=true; scene.add(m); return m;
-}
-
-function createCity(){
-    // sidewalks + houses down both sides
-    for(let i=0;i<34;i++){
-        const z=-i*27-8;
-        box(4,.16,20,0xb7b7b7,-11,.05,z);
-        box(4,.16,20,0xb7b7b7, 11,.05,z);
-        const left=box(7,3.8,9, i%2?0xd9c2a7:0xc9d5df,-17,1.9,z-3);
-        const right=box(7,3.8,9,i%3?0xe0d0bb:0xbcc8b5,17,1.9,z+3);
-        // roofs
-        box(7.5,.35,9.5,0x4a3a35,-17,4,z-3).rotation.z=.02;
-        box(7.5,.35,9.5,0x3e4147,17,4,z+3).rotation.z=-.02;
-        // windows
-        for(const x of [-19,-15,15,19]) box(1.1,1.1,.08,0x8fc9ff,x,2.3,z+(x<0?1.55:7.55));
-        // trees
-        if(i%2===0){
-            box(.35,2,.35,0x6b4428,-9,1,z-8);
-            const crown=new THREE.Mesh(new THREE.SphereGeometry(1.25,10,8),new THREE.MeshStandardMaterial({color:0x347a3b})); crown.position.set(-9,2.7,z-8); scene.add(crown);
-        }
-        // cross roads every 5 blocks
-        if(i%5===4){
-            box(70,.025,10,0x292c31,0,.015,z-13);
-            for(let x=-30;x<=30;x+=7) box(3,.035,.18,0xffffff,x,.04,z-13);
-        }
-    }
-}
-
-function createPoliceCar(x,z){
-    const g=new THREE.Group();
-    const body=new THREE.Mesh(new THREE.BoxGeometry(1.8,.65,3.5),new THREE.MeshStandardMaterial({color:0x151922,metalness:.5,roughness:.35}));
-    body.position.y=.62; g.add(body);
-    const cabin=new THREE.Mesh(new THREE.BoxGeometry(1.55,.55,1.65),new THREE.MeshStandardMaterial({color:0x27394c})); cabin.position.set(0,1.12,.15); g.add(cabin);
-    const lightL=new THREE.Mesh(new THREE.BoxGeometry(.65,.12,.22),new THREE.MeshStandardMaterial({color:0x2266ff,emissive:0x2266ff,emissiveIntensity:3})); lightL.position.set(-.36,1.48,.1); g.add(lightL);
-    const lightR=new THREE.Mesh(new THREE.BoxGeometry(.65,.12,.22),new THREE.MeshStandardMaterial({color:0xff2222,emissive:0xff2222,emissiveIntensity:3})); lightR.position.set(.36,1.48,.1); g.add(lightR);
-    g.position.set(x,0,z); scene.add(g); policeCars.push(g); return g;
-}
-function createPolice(){ createPoliceCar(-3,-65); createPoliceCar(3,-150); }
-
-function updatePolice(movement){
-    policeTimer++;
-    if(speed>55) wantedLevel=Math.min(5, Math.max(wantedLevel,1));
-    if(speed>70) wantedLevel=Math.min(5, Math.max(wantedLevel,2));
-    if(wheelieAngle>.25 && speed>35) wantedLevel=Math.min(5, Math.max(wantedLevel,2));
-    if(wantedLevel>0 && policeTimer%900===0) wantedLevel=Math.min(5,wantedLevel+1);
-    document.getElementById('wanted').innerText='★'.repeat(wantedLevel)+'☆'.repeat(5-wantedLevel);
-    policeCars.forEach((p,idx)=>{
-        p.position.z += movement * (1.08 + wantedLevel*.035);
-        // chase toward player lane
-        p.position.x += (bike.position.x-p.position.x)*.006*(wantedLevel+1);
-        p.rotation.y=Math.sin(performance.now()*.012+idx)*.025;
-        // flashing lights feel
-        p.children.slice(-2).forEach((l,j)=>l.visible=Math.floor(performance.now()/180+j)%2===0);
-        if(p.position.z>12) p.position.z=-170-Math.random()*160;
-        if(Math.abs(p.position.z)<2.4 && Math.abs(p.position.x-bike.position.x)<1.5 && speed>10) crash();
-    });
-}
-
-/* ---------------- BIKE ---------------- */
-
-function createBike(){
-
-    bike=new THREE.Group();
-
-
-    const bikeColor =
-        selectedBike==="talaria"
-        ? 0x111111
-        : 0x4b4b4b;
-
-
-    /* FRAME */
-
-    const frame=new THREE.Mesh(
-        new THREE.BoxGeometry(.38,.45,1.65),
-        new THREE.MeshStandardMaterial({
-            color:bikeColor,
-            metalness:.7,
-            roughness:.25
-        })
-    );
-
-    frame.position.y=1;
-
-    bike.add(frame);
-
-
-    /* BATTERY */
-
-    const battery=new THREE.Mesh(
-        new THREE.BoxGeometry(.45,.7,.65),
-        new THREE.MeshStandardMaterial({
-            color:0x16191e
-        })
-    );
-
-    battery.position.set(
-        0,
-        1.15,
-        .15
-    );
-
-    bike.add(battery);
-
-
-    /* SEAT */
-
-    const seat=new THREE.Mesh(
-        new THREE.BoxGeometry(.42,.14,.85),
-        new THREE.MeshStandardMaterial({
-            color:0x080808
-        })
-    );
-
-    seat.position.set(
-        0,
-        1.55,
-        .35
-    );
-
-    bike.add(seat);
-
-
-    /* WHEELS */
-
-    rearWheel=createWheel();
-    frontWheel=createWheel();
-
-    rearWheel.position.set(
-        0,
-        .65,
-        .9
-    );
-
-    frontWheel.position.set(
-        0,
-        .65,
-        -1
-    );
-
-    bike.add(rearWheel);
-    bike.add(frontWheel);
-
-
-    /* FORK */
-
-    const fork=new THREE.Mesh(
-        new THREE.BoxGeometry(
-            .08,
-            1.1,
-            .08
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0xaaaaaa,
-            metalness:1
-        })
-    );
-
-    fork.position.set(
-        .18,
-        1.15,
-        -.85
-    );
-
-    fork.rotation.x=-.2;
-
-    bike.add(fork);
-
-    const fork2=fork.clone();
-    fork2.position.x=-.18;
-
-    bike.add(fork2);
-
-
-    /* HANDLEBAR */
-
-    const bar=new THREE.Mesh(
-        new THREE.BoxGeometry(
-            1,
-            .07,
-            .07
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0x111111
-        })
-    );
-
-    bar.position.set(
-        0,
-        1.85,
-        -.75
-    );
-
-    bike.add(bar);
-
-
-
-    /* BETTER BIKE DETAILS */
-    const motor=new THREE.Mesh(new THREE.CylinderGeometry(.28,.28,.42,18),new THREE.MeshStandardMaterial({color:0x30343b,metalness:.8,roughness:.25}));
-    motor.rotation.z=Math.PI/2; motor.position.set(0,.92,.28); bike.add(motor);
-    const headlight=new THREE.Mesh(new THREE.BoxGeometry(.46,.28,.16),new THREE.MeshStandardMaterial({color:0xeaf6ff,emissive:0xcdeaff,emissiveIntensity:2.5}));
-    headlight.position.set(0,1.62,-1.02); bike.add(headlight);
-    const rearFender=new THREE.Mesh(new THREE.BoxGeometry(.48,.08,.95),new THREE.MeshStandardMaterial({color:bikeColor,metalness:.45})); rearFender.position.set(0,1.32,1.02); rearFender.rotation.x=-.12; bike.add(rearFender);
-    const frontFender=rearFender.clone(); frontFender.position.set(0,1.18,-1.12); frontFender.rotation.x=.18; bike.add(frontFender);
-    // swingarm
-    for(const x of [-.2,.2]){ const arm=new THREE.Mesh(new THREE.BoxGeometry(.07,.08,1.15),new THREE.MeshStandardMaterial({color:0x777b82,metalness:.8})); arm.position.set(x,.78,.48); arm.rotation.x=-.12; bike.add(arm); }
-    // front number plate
-    const plate=new THREE.Mesh(new THREE.BoxGeometry(.62,.65,.08),new THREE.MeshStandardMaterial({color:selectedBike==='talaria'?0x111111:0xeeeeee})); plate.position.set(0,1.48,-.92); plate.rotation.x=-.15; bike.add(plate);
-
-    bike.position.y=0;
-
-    scene.add(bike);
-}
-
-
-function createWheel(){
-
-    const wheel=new THREE.Mesh(
-        new THREE.TorusGeometry(
-            .52,
-            .09,
-            14,
-            30
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0x080808,
-            roughness:.7
-        })
-    );
-
-    wheel.rotation.y=Math.PI/2;
-
-    wheel.castShadow=true;
-
-    return wheel;
-}
-
-
-/* ---------------- INPUT ---------------- */
-
-window.addEventListener(
-    "keydown",
-    e=>{
-        keys[e.code]=true;
-    }
-);
-
-window.addEventListener(
-    "keyup",
-    e=>{
-        keys[e.code]=false;
-    }
-);
-
-
-/* ---------------- GAME ---------------- */
-
-function updateGame(){
-
-    if(!running || crashed) return;
-
-
-    /* ACCELERATION */
-
-    const acceleration =
-        selectedBike==="surron"
-        ? .085
-        : .075;
-
-
-    const maxSpeed =
-        selectedBike==="surron"
-        ? 82
-        : 75;
-
-
-    if(keys["KeyW"]){
-
-        speed+=acceleration;
-
-    }else{
-
-        speed-=.018;
-    }
-
-
-    if(keys["KeyS"]){
-
-        speed-=.13;
-    }
-
-
-    speed=Math.max(
-        0,
-        Math.min(maxSpeed,speed)
-    );
-
-
-    /* STEERING */
-
-    if(keys["KeyA"]){
-        steering+=.0025;
-    }
-
-    if(keys["KeyD"]){
-        steering-=.0025;
-    }
-
-    steering*=.91;
-
-    bike.position.x+=
-        steering*(speed*.04);
-
-
-    bike.position.x=
-        THREE.MathUtils.clamp(
-            bike.position.x,
-            -7,
-            7
-        );
-
-
-    bike.rotation.z=
-        -steering*8;
-
-
-    /* WHEELIE */
-
-    if(keys["Space"] && speed>8){
-
-        wheelieAngle+=.0065;
-
-    }else{
-
-        wheelieAngle-=.0038;
-    }
-
-
-    /* BALANCE RANDOMNESS */
-
-    if(wheelieAngle>.15){
-
-        wheelieAngle+=
-            (Math.random()-.5)*.0016;
-    }
-
-
-    wheelieAngle=
-        Math.max(
-            0,
-            wheelieAngle
-        );
-
-
-    bike.rotation.x=
-        wheelieAngle;
-
-
-    /* SCORE */
-
-    if(wheelieAngle>.12){
-
-        combo+=.004;
-
-        score+=
-            speed*
-            combo*
-            .018;
-
-    }else{
-
-        combo=Math.max(
-            1,
-            combo-.02
-        );
-    }
-
-
-    /* CRASH */
-
-    if(wheelieAngle>1.05){
-
-        crash();
-    }
-
-
-    /* MOVE WORLD */
-
-    const movement=
-        speed*.015;
-
-    updatePolice(movement);
-
-    scene.children.forEach(obj=>{
-
-        if(obj!==bike &&
-           obj!==camera &&
-           obj.position){
-
-            if(
-                obj.geometry &&
-                obj!==bike
-            ){
-
-                obj.position.z+=movement;
-
-                if(obj.position.z>20){
-
-                    if(
-                        obj.position.x!==0 ||
-                        obj.geometry.type!=="PlaneGeometry"
-                    ){
-
-                        obj.position.z-=880;
-                    }
-                }
-            }
-        }
-
-    });
-
-
-    /* WHEELS */
-
-    rearWheel.rotation.x-=
-        speed*.01;
-
-    frontWheel.rotation.x-=
-        speed*.01;
-
-
-    /* UI */
-
-    document.getElementById(
-        "speedNumber"
-    ).innerText=
-        Math.round(speed);
-
-
-    document.getElementById(
-        "score"
-    ).innerText=
-        Math.floor(score).toLocaleString();
-
-
-    document.getElementById(
-        "combo"
-    ).innerText=
-        "x"+combo.toFixed(1);
-
-
-    const balance=
-        Math.min(
-            wheelieAngle/1.05,
-            1
-        )*100;
-
-
-    document.getElementById(
-        "balanceBar"
-    ).style.width=
-        balance+"%";
-}
-
-
-/* ---------------- CAMERA ---------------- */
-
-function updateCamera(){
-
-    if(!bike) return;
-
-    const desired=
-        new THREE.Vector3(
-            bike.position.x,
-            3.5,
-            7
-        );
-
-
-    camera.position.lerp(
-        desired,
-        .08
-    );
-
-
-    camera.lookAt(
-        bike.position.x,
-        1,
-        -3
-    );
-}
-
-
-/* ---------------- CRASH ---------------- */
-
-function crash(){
-
-    crashed=true;
-    running=false;
-
-    bike.rotation.z=1.4;
-
-    document.getElementById(
-        "finalScore"
-    ).innerText=
-        "Score: "+
-        Math.floor(score).toLocaleString();
-
-
-    saveScore();
-
-
-    document.getElementById(
-        "crash"
-    ).style.display="flex";
-}
-
-
-/* ---------------- SCORE ---------------- */
-
-function saveScore(){
-
-    const name=
-        localStorage.getItem(
-            "wheelieUsername"
-        ) || "Rider";
-
-
-    let leaderboard=
-        JSON.parse(
-            localStorage.getItem(
-                "wheelieLeaderboard"
-            ) || "[]"
-        );
-
-
-    leaderboard.push({
-        name:name,
-        score:Math.floor(score)
-    });
-
-
-    leaderboard.sort(
-        (a,b)=>b.score-a.score
-    );
-
-
-    leaderboard=
-        leaderboard.slice(0,5);
-
-
-    localStorage.setItem(
-        "wheelieLeaderboard",
-        JSON.stringify(leaderboard)
-    );
-
-
-    updateLeaderboard();
-}
-
-
-function updateLeaderboard(){
-
-    const leaderboard=
-        JSON.parse(
-            localStorage.getItem(
-                "wheelieLeaderboard"
-            ) || "[]"
-        );
-
-
-    const rows=
-        document.getElementById(
-            "leaderRows"
-        );
-
-
-    rows.innerHTML="";
-
-
-    if(leaderboard.length===0){
-
-        rows.innerHTML=
-        '<div style="color:#778399;font-size:13px">Ingen scores endnu</div>';
-
+<script>
+
+// FAKE TERMINAL DATA ONLY
+const messages = [
+    "[SYSTEM] Establishing secure connection...",
+    "[OK] Connection established.",
+    "[SYSTEM] Detecting operating system...",
+    "[OK] Device detected.",
+    "[SYSTEM] Starting security scan...",
+    "[SCAN] Searching browser database...",
+    "[SCAN] Checking saved credentials...",
+    "[FOUND] 7 browser sessions detected.",
+    "[FOUND] 14 cached login entries.",
+    "[SCAN] Checking local storage...",
+    "[FOUND] Documents directory detected.",
+    "[SCAN] Searching authentication tokens...",
+    "[FOUND] Discord session: ***************",
+    "[FOUND] Google account: ***************",
+    "[FOUND] Roblox session: ***************",
+    "[SYSTEM] Preparing encrypted archive...",
+    "[UPLOAD] Connecting remote server...",
+    "[UPLOAD] Sending package...",
+    "[WARNING] Security software response detected.",
+    "[BYPASS] Attempting bypass...",
+    "[OK] Bypass successful.",
+    "[UPLOAD] Finalizing transfer..."
+];
+
+const container = document.getElementById("lineContainer");
+const bar = document.getElementById("bar");
+const progressText = document.getElementById("progressText");
+
+let index = 0;
+
+function addLine() {
+
+    if(index >= messages.length) {
+        startUpload();
         return;
     }
 
+    const div = document.createElement("div");
+    div.className = "line";
 
-    leaderboard.forEach(
-        (player,index)=>{
-
-            const row=
-                document.createElement("div");
-
-            row.className="leader";
-
-            row.innerHTML=
-            `<span>#${index+1} ${player.name}</span>
-             <b>${player.score.toLocaleString()}</b>`;
-
-            rows.appendChild(row);
-        }
-    );
-}
-
-
-/* ---------------- RESET ---------------- */
-
-window.resetGame=function(){
-
-    document.getElementById(
-        "crash"
-    ).style.display="none";
-
-
-    speed=0;
-    score=0;
-    combo=1;
-    wheelieAngle=0;
-    steering=0;
-    wantedLevel=0;
-    policeTimer=0;
-
-    bike.rotation.set(0,0,0);
-    bike.position.x=0;
-
-    crashed=false;
-    running=true;
-};
-
-
-/* ---------------- LOOP ---------------- */
-
-function animate(){
-
-    requestAnimationFrame(
-        animate
-    );
-
-    updateGame();
-    updateCamera();
-
-    renderer.render(
-        scene,
-        camera
-    );
-}
-
-
-/* ---------------- RESIZE ---------------- */
-
-window.addEventListener(
-    "resize",
-    ()=>{
-
-        if(!camera || !renderer) return;
-
-        camera.aspect=
-            innerWidth/innerHeight;
-
-        camera.updateProjectionMatrix();
-
-        renderer.setSize(
-            innerWidth,
-            innerHeight
-        );
+    if(messages[index].includes("WARNING")) {
+        div.classList.add("red");
     }
-);
+
+    if(messages[index].includes("FOUND")) {
+        div.classList.add("yellow");
+    }
+
+    div.textContent = "> " + messages[index];
+
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+
+    index++;
+
+    setTimeout(addLine, 250 + Math.random() * 450);
+}
+
+setTimeout(addLine, 800);
+
+
+// FAKE UPLOAD
+
+function startUpload() {
+
+    let percent = 0;
+
+    const upload = setInterval(() => {
+
+        percent += Math.floor(Math.random() * 7) + 1;
+
+        if(percent > 100) percent = 100;
+
+        bar.style.width = percent + "%";
+        progressText.textContent =
+            "Uploading encrypted files... " + percent + "%";
+
+        if(percent >= 100) {
+
+            clearInterval(upload);
+
+            progressText.textContent = "TRANSFER COMPLETE";
+
+            setTimeout(() => {
+                document.getElementById("final").style.display = "flex";
+            }, 1800);
+        }
+
+    }, 180);
+}
+
+
+// MATRIX BACKGROUND
+
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+resize();
+
+window.addEventListener("resize", resize);
+
+const chars =
+"01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&@";
+
+const fontSize = 14;
+
+let columns =
+Math.floor(canvas.width / fontSize);
+
+let drops =
+Array(columns).fill(1);
+
+function drawMatrix() {
+
+    ctx.fillStyle = "rgba(0,0,0,.08)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    ctx.fillStyle = "#00ff66";
+    ctx.font = fontSize + "px monospace";
+
+    for(let i = 0; i < drops.length; i++) {
+
+        const char =
+            chars[Math.floor(Math.random()*chars.length)];
+
+        ctx.fillText(
+            char,
+            i * fontSize,
+            drops[i] * fontSize
+        );
+
+        if(
+            drops[i] * fontSize > canvas.height &&
+            Math.random() > .975
+        ) {
+            drops[i] = 0;
+        }
+
+        drops[i]++;
+    }
+}
+
+setInterval(drawMatrix, 40);
 
 </script>
 
