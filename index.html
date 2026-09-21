@@ -1,287 +1,891 @@
-<div id="rat">🐀</div>
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<div id="hackScreen">
-    <h1>⚠ YOUR COMPUTER HAS BEEN HACKED ⚠</h1>
-    <div id="hackText">ESTABLISHING REMOTE CONNECTION...</div>
-    <div class="fakeProgress">
-        <div id="hackBar"></div>
-    </div>
-    <p id="percent">0% UPLOADED</p>
-</div>
+<title>Video</title>
 
 <style>
-#rat{
-    display:none;
-    position:fixed;
-    left:100px;
-    top:100px;
-    font-size:110px;
-    z-index:9999999;
-    user-select:none;
-    pointer-events:none;
-    filter:drop-shadow(0 0 20px red);
+*{
+    box-sizing:border-box;
 }
 
-#hackScreen{
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#000;
+    font-family:Arial,sans-serif;
+}
+
+/* START */
+#start{
+    position:fixed;
+    inset:0;
+    background:#080808;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:100000;
+    color:white;
+}
+
+.startbox{
+    width:min(430px,90%);
+    padding:35px;
+    background:#111;
+    border:1px solid #333;
+    border-radius:20px;
+    text-align:center;
+}
+
+.startbox h1{
+    margin-top:0;
+}
+
+#startBtn{
+    border:0;
+    border-radius:12px;
+    padding:16px 30px;
+    background:white;
+    color:black;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* HACK SCREEN */
+#hack{
     display:none;
     position:fixed;
     inset:0;
-    z-index:999999;
-    background:#050000;
+    background:#020000;
     color:red;
+    z-index:1000;
+    overflow:hidden;
+}
+
+#warning{
+    position:absolute;
+    width:100%;
+    top:35px;
     text-align:center;
-    padding-top:80px;
     font-family:monospace;
 }
 
-#hackScreen h1{
-    font-size:clamp(30px,6vw,80px);
+#warning h1{
+    font-size:clamp(32px,6vw,80px);
+    margin:0;
+    text-shadow:
+        4px 0 #fff,
+        -4px 0 #500;
     animation:glitch .12s infinite;
 }
 
-#hackText{
+#warning p{
+    color:white;
+    font-size:17px;
+}
+
+#terminal{
+    position:absolute;
+    left:5%;
+    bottom:7%;
+    width:90%;
+    height:40%;
+    border:1px solid #00ff41;
+    background:rgba(0,0,0,.9);
+    padding:18px;
+    overflow:hidden;
     color:#00ff41;
-    font-size:20px;
-    margin-top:50px;
+    font-family:monospace;
+    font-size:14px;
 }
 
-.fakeProgress{
-    width:min(700px,80%);
-    height:25px;
-    border:2px solid red;
-    margin:30px auto 10px;
+#linebox{
+    height:70%;
+    overflow:hidden;
 }
 
-#hackBar{
-    height:100%;
+.line{
+    margin:5px 0;
+}
+
+.danger{
+    color:red;
+}
+
+.found{
+    color:#ffff00;
+}
+
+#progressOuter{
+    position:absolute;
+    bottom:20px;
+    left:20px;
+    right:20px;
+    height:20px;
+    border:1px solid red;
+}
+
+#progress{
     width:0%;
+    height:100%;
     background:red;
 }
 
-#percent{
+#percentage{
+    position:absolute;
+    bottom:45px;
+    right:20px;
     color:white;
+}
+
+/* ANIMAL */
+#animal{
+    display:none;
+    position:fixed;
+    left:100px;
+    top:200px;
+    font-size:120px;
+    z-index:99999;
+    pointer-events:none;
+    user-select:none;
+    filter:drop-shadow(0 0 15px red);
+}
+
+/* RANDOM ERROR BOX */
+.error{
+    position:fixed;
+    width:280px;
+    background:#ddd;
+    color:black;
+    border:2px solid #222;
+    z-index:5000;
+    box-shadow:8px 8px 0 rgba(0,0,0,.5);
+}
+
+.errorTitle{
+    background:#0066cc;
+    color:white;
+    padding:7px;
+    font-weight:bold;
+}
+
+.errorContent{
+    padding:18px;
+    text-align:center;
+    font-weight:bold;
+}
+
+/* EXIT */
+#pranked{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:9999999;
+    background:#000;
+    color:white;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+}
+
+#pranked h1{
+    font-size:clamp(55px,12vw,140px);
+    margin:0;
+}
+
+#pranked .rat{
+    font-size:100px;
 }
 
 @keyframes glitch{
     0%{transform:translate(0)}
-    25%{transform:translate(5px,-3px)}
-    50%{transform:translate(-5px,4px)}
+    25%{transform:translate(6px,-3px)}
+    50%{transform:translate(-7px,4px)}
+    75%{transform:translate(5px,5px)}
+    100%{transform:translate(-4px,-5px)}
+}
+
+@keyframes shake{
+    0%{transform:translate(0,0)}
+    25%{transform:translate(4px,-4px)}
+    50%{transform:translate(-5px,3px)}
     75%{transform:translate(4px,5px)}
     100%{transform:translate(-3px,-4px)}
 }
+
+.shake{
+    animation:shake .08s infinite;
+}
 </style>
+</head>
+
+<body>
+
+<!-- START SCREEN -->
+
+<div id="start">
+    <div class="startbox">
+
+        <h1>🎬 Video klar</h1>
+
+        <p>
+            Klik nedenunder for at afspille videoen.
+        </p>
+
+        <button id="startBtn">
+            ▶ AFSPIL
+        </button>
+
+    </div>
+</div>
+
+
+<!-- FAKE HACK -->
+
+<div id="hack">
+
+    <div id="warning">
+
+        <h1>⚠ SYSTEM COMPROMISED ⚠</h1>
+
+        <p>
+            REMOTE CONNECTION DETECTED
+        </p>
+
+    </div>
+
+
+    <div id="terminal">
+
+        <div id="linebox"></div>
+
+        <div id="percentage">
+            0% UPLOADED
+        </div>
+
+        <div id="progressOuter">
+            <div id="progress"></div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ANIMAL -->
+
+<div id="animal">
+    🐀
+</div>
+
+
+<!-- FINAL -->
+
+<div id="pranked">
+
+    <div>
+
+        <div class="rat">
+            🐀
+        </div>
+
+        <h1>
+            PRANKED 😭🙏
+        </h1>
+
+        <h2>
+            BRO THOUGHT HE GOT HACKED ☠️
+        </h2>
+
+        <p style="color:#777">
+            Ingen filer, passwords eller oplysninger blev hentet.
+        </p>
+
+    </div>
+
+</div>
+
 
 <script>
+
+const start =
+document.getElementById("start");
+
+const button =
+document.getElementById("startBtn");
+
+const hack =
+document.getElementById("hack");
+
+const animal =
+document.getElementById("animal");
+
+const lines =
+document.getElementById("linebox");
+
+const progress =
+document.getElementById("progress");
+
+const percentage =
+document.getElementById("percentage");
+
+const pranked =
+document.getElementById("pranked");
+
+
 let running = false;
-let animation;
-let uploadInterval;
 
-const rat = document.getElementById("rat");
-const screen = document.getElementById("hackScreen");
-const hackText = document.getElementById("hackText");
-const bar = document.getElementById("hackBar");
-const percentText = document.getElementById("percent");
+let x = 100;
+let y = 150;
 
-function START(){
+let dx = 11;
+let dy = 8;
+
+let animationID;
+
+let progressValue = 0;
+
+let progressTimer;
+
+let errorTimer;
+
+let terminalTimer;
+
+
+const fakeMessages = [
+
+"Connecting to remote server...",
+
+"Connection established.",
+
+"Scanning computer...",
+
+"Operating system detected.",
+
+"Checking browser storage...",
+
+"Searching saved sessions...",
+
+"14 accounts detected.",
+
+"Checking local files...",
+
+"Documents folder located.",
+
+"Pictures folder located.",
+
+"Preparing remote upload...",
+
+"Encrypting package...",
+
+"Security software detected.",
+
+"Attempting bypass...",
+
+"Bypass successful.",
+
+"Uploading package...",
+
+"DO NOT TURN OFF COMPUTER.",
+
+"Remote user connected.",
+
+"Transfer running..."
+
+];
+
+
+button.addEventListener("click", startPrank);
+
+
+function startPrank(){
 
     if(running) return;
+
     running = true;
 
-    const start = document.getElementById("start");
-    if(start) start.remove();
+    start.style.display = "none";
 
-    screen.style.display = "block";
-    rat.style.display = "block";
+    hack.style.display = "block";
 
-    // Browseren bestemmer selv, om fullscreen tillades.
-    document.documentElement.requestFullscreen?.().catch(()=>{});
+    animal.style.display = "block";
 
-    startRat();
-    fakeHack();
-}
+    document.body.classList.add("shake");
 
-function startRat(){
 
-    let x = 100;
-    let y = 100;
+    /* FULLSCREEN */
 
-    let dx = 12;
-    let dy = 9;
+    const element =
+    document.documentElement;
 
-    function move(){
+    if(element.requestFullscreen){
 
-        if(!running) return;
+        element
+        .requestFullscreen()
+        .catch(()=>{});
 
-        x += dx;
-        y += dy;
-
-        const size = 120;
-
-        if(x <= 0 || x + size >= innerWidth){
-            dx *= -1;
-
-            rat.style.transform =
-                `rotate(${Math.random()*720-360}deg) scale(${1+Math.random()})`;
-        }
-
-        if(y <= 0 || y + size >= innerHeight){
-            dy *= -1;
-
-            rat.style.transform =
-                `rotate(${Math.random()*720-360}deg) scale(${1+Math.random()})`;
-        }
-
-        // random cursed movement
-        if(Math.random() < .015){
-            dx = (Math.random()*20+7) * (Math.random()>.5 ? 1:-1);
-            dy = (Math.random()*20+7) * (Math.random()>.5 ? 1:-1);
-        }
-
-        rat.style.left = x+"px";
-        rat.style.top = y+"px";
-
-        animation = requestAnimationFrame(move);
     }
 
-    move();
+
+    moveAnimal();
+
+    startTerminal();
+
+    startProgress();
+
+    startErrors();
+
 }
 
-function fakeHack(){
 
-    const texts = [
-        "ESTABLISHING REMOTE CONNECTION...",
-        "BYPASSING WINDOWS SECURITY...",
-        "SEARCHING BROWSER DATA...",
-        "PASSWORD DATABASE LOCATED...",
-        "ACCESSING DOCUMENTS...",
-        "CONNECTING TO REMOTE SERVER...",
-        "PREPARING FILE TRANSFER...",
-        "UPLOADING FILES...",
-        "DO NOT TURN OFF YOUR COMPUTER ☠️"
-    ];
+/* ---------------------
+   MOVING RAT
+---------------------- */
 
-    let textIndex = 0;
+function moveAnimal(){
 
+    if(!running) return;
+
+    x += dx;
+    y += dy;
+
+
+    const animalWidth =
+    animal.offsetWidth || 120;
+
+    const animalHeight =
+    animal.offsetHeight || 120;
+
+
+    if(
+        x <= 0 ||
+        x + animalWidth >= window.innerWidth
+    ){
+
+        dx *= -1;
+
+        animal.style.transform =
+        "rotate(" +
+        (Math.random()*720-360) +
+        "deg) scale(" +
+        (1 + Math.random()) +
+        ")";
+
+    }
+
+
+    if(
+        y <= 0 ||
+        y + animalHeight >= window.innerHeight
+    ){
+
+        dy *= -1;
+
+        animal.style.transform =
+        "rotate(" +
+        (Math.random()*720-360) +
+        "deg)";
+
+    }
+
+
+    if(Math.random() < 0.015){
+
+        dx =
+        (8 + Math.random()*18) *
+        (Math.random() > .5 ? 1 : -1);
+
+        dy =
+        (8 + Math.random()*18) *
+        (Math.random() > .5 ? 1 : -1);
+
+    }
+
+
+    animal.style.left =
+    x + "px";
+
+    animal.style.top =
+    y + "px";
+
+
+    animationID =
+    requestAnimationFrame(moveAnimal);
+
+}
+
+
+/* ---------------------
+   TERMINAL
+---------------------- */
+
+function startTerminal(){
+
+    let index = 0;
+
+
+    terminalTimer =
     setInterval(()=>{
 
         if(!running) return;
 
-        hackText.textContent =
-            texts[textIndex % texts.length];
 
-        textIndex++;
+        const line =
+        document.createElement("div");
 
-    },900);
+        line.className = "line";
 
 
-    let progress = 0;
+        const message =
+        fakeMessages[
+            index %
+            fakeMessages.length
+        ];
 
-    uploadInterval = setInterval(()=>{
+
+        if(
+            message.includes("detected") ||
+            message.includes("DO NOT")
+        ){
+
+            line.classList.add("danger");
+
+        }
+
+
+        if(
+            message.includes("accounts") ||
+            message.includes("folder")
+        ){
+
+            line.classList.add("found");
+
+        }
+
+
+        line.textContent =
+        "> " + message;
+
+
+        lines.appendChild(line);
+
+
+        lines.scrollTop =
+        lines.scrollHeight;
+
+
+        if(lines.children.length > 18){
+
+            lines.removeChild(
+                lines.children[0]
+            );
+
+        }
+
+
+        index++;
+
+    },450);
+
+}
+
+
+/* ---------------------
+   FAKE UPLOAD
+---------------------- */
+
+function startProgress(){
+
+    progressTimer =
+    setInterval(()=>{
 
         if(!running) return;
 
-        progress += Math.random()*3;
 
-        // keep it stuck near the end for maximum trolling 😭
-        if(progress > 98){
-            progress = 98;
+        progressValue +=
+        Math.random()*2.5;
+
+
+        /* NEVER FINISH */
+
+        if(progressValue > 98){
+
+            progressValue = 98;
+
         }
 
-        bar.style.width = progress+"%";
 
-        percentText.textContent =
-            Math.floor(progress)+"% UPLOADED";
+        progress.style.width =
+        progressValue + "%";
+
+
+        percentage.textContent =
+        Math.floor(progressValue) +
+        "% UPLOADED";
+
 
     },180);
+
 }
 
 
-// clicking makes the rat go insane
-document.addEventListener("click",()=>{
+/* ---------------------
+   FAKE ERRORS
+---------------------- */
+
+function startErrors(){
+
+    errorTimer =
+    setInterval(()=>{
+
+        if(!running) return;
+
+
+        createError();
+
+
+    },900);
+
+}
+
+
+function createError(){
+
+    const box =
+    document.createElement("div");
+
+    box.className = "error";
+
+
+    const texts = [
+
+        "CRITICAL SYSTEM ERROR",
+
+        "Remote user connected",
+
+        "Security service stopped",
+
+        "File transfer running...",
+
+        "Bro what did you click 😭",
+
+        "Windows Defender gave up ☠️",
+
+        "Skill issue detected.",
+
+        "🐀 RAT.EXE IS RUNNING"
+
+    ];
+
+
+    box.innerHTML = `
+
+        <div class="errorTitle">
+
+            SYSTEM WARNING
+
+        </div>
+
+        <div class="errorContent">
+
+            ${
+                texts[
+                    Math.floor(
+                        Math.random() *
+                        texts.length
+                    )
+                ]
+            }
+
+        </div>
+
+    `;
+
+
+    box.style.left =
+    Math.random() *
+    Math.max(
+        1,
+        window.innerWidth - 280
+    )
+    + "px";
+
+
+    box.style.top =
+    Math.random() *
+    Math.max(
+        1,
+        window.innerHeight - 130
+    )
+    + "px";
+
+
+    document.body.appendChild(box);
+
+
+    setTimeout(()=>{
+
+        box.remove();
+
+    },5000);
+
+}
+
+
+/* ---------------------
+   CLICK = MORE CHAOS
+---------------------- */
+
+document.addEventListener(
+"click",
+function(){
 
     if(!running) return;
 
-    rat.style.fontSize =
-        (100 + Math.random()*170)+"px";
 
-    rat.textContent =
-        ["🐀","🐁","🐒","🦧","🐸","🦝"]
-        [Math.floor(Math.random()*6)];
+    animal.textContent =
+
+    [
+        "🐀",
+        "🐁",
+        "🦝",
+        "🐒",
+        "🦧",
+        "🐸"
+    ][
+        Math.floor(
+            Math.random()*6
+        )
+    ];
+
+
+    animal.style.fontSize =
+    (
+        100 +
+        Math.random()*130
+    )
+    + "px";
+
+
+    createError();
+    createError();
 
 });
 
 
-// SECRET EXIT: SHIFT + K + L
+/* ---------------------
+   SECRET EXIT
+   SHIFT + K + L
+---------------------- */
 
-const pressed = new Set();
+const keys =
+new Set();
 
-document.addEventListener("keydown",(e)=>{
 
-    pressed.add(e.key.toLowerCase());
+document.addEventListener(
+"keydown",
+function(event){
+
+    const key =
+    event.key.toLowerCase();
+
+
+    keys.add(key);
+
 
     if(
-        e.shiftKey &&
-        pressed.has("k") &&
-        pressed.has("l")
+        event.shiftKey &&
+        keys.has("k") &&
+        keys.has("l")
     ){
+
         stopPrank();
+
     }
+
 });
 
-document.addEventListener("keyup",(e)=>{
-    pressed.delete(e.key.toLowerCase());
+
+document.addEventListener(
+"keyup",
+function(event){
+
+    keys.delete(
+        event.key.toLowerCase()
+    );
+
 });
 
+
+/* ---------------------
+   STOP
+---------------------- */
 
 function stopPrank(){
 
+    if(!running) return;
+
     running = false;
 
-    cancelAnimationFrame(animation);
-    clearInterval(uploadInterval);
 
-    rat.style.display = "none";
-    screen.style.display = "none";
+    cancelAnimationFrame(
+        animationID
+    );
 
-    document.exitFullscreen?.().catch(()=>{});
 
-    document.body.innerHTML = `
-        <div style="
-            position:fixed;
-            inset:0;
-            background:#000;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            text-align:center;
-            color:white;
-            font-family:Arial;
-        ">
+    clearInterval(
+        progressTimer
+    );
 
-            <div>
+    clearInterval(
+        errorTimer
+    );
 
-                <div style="font-size:100px">
-                    🐀
-                </div>
+    clearInterval(
+        terminalTimer
+    );
 
-                <h1 style="
-                    font-size:clamp(50px,10vw,130px);
-                    margin:10px;
-                ">
-                    PRANKED 😭🙏
-                </h1>
 
-                <h2>
-                    BRO THOUGHT HE GOT HACKED ☠️
-                </h2>
+    document.body.classList.remove(
+        "shake"
+    );
 
-                <p style="color:#777">
-                    Ingen filer, passwords eller data blev hentet.
-                </p>
 
-            </div>
+    document
+    .querySelectorAll(".error")
+    .forEach(
+        element =>
+        element.remove()
+    );
 
-        </div>
-    `;
+
+    animal.style.display =
+    "none";
+
+    hack.style.display =
+    "none";
+
+
+    if(document.fullscreenElement){
+
+        document
+        .exitFullscreen()
+        .catch(()=>{});
+
+    }
+
+
+    pranked.style.display =
+    "flex";
+
 }
+
 </script>
+
+</body>
+</html>
