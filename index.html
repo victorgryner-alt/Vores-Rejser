@@ -1,370 +1,287 @@
-<!doctype html>
-<html lang="da">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Loading...</title>
+<div id="rat">🐀</div>
+
+<div id="hackScreen">
+    <h1>⚠ YOUR COMPUTER HAS BEEN HACKED ⚠</h1>
+    <div id="hackText">ESTABLISHING REMOTE CONNECTION...</div>
+    <div class="fakeProgress">
+        <div id="hackBar"></div>
+    </div>
+    <p id="percent">0% UPLOADED</p>
+</div>
 
 <style>
-*{box-sizing:border-box}
-html,body{
-  width:100%;height:100%;margin:0;overflow:hidden;
-  font-family:Arial,Helvetica,sans-serif;
-  background:#050505;color:white;
+#rat{
+    display:none;
+    position:fixed;
+    left:100px;
+    top:100px;
+    font-size:110px;
+    z-index:9999999;
+    user-select:none;
+    pointer-events:none;
+    filter:drop-shadow(0 0 20px red);
 }
 
-#start{
-  position:fixed;inset:0;z-index:99999;
-  display:flex;align-items:center;justify-content:center;
-  background:#050505;
+#hackScreen{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:999999;
+    background:#050000;
+    color:red;
+    text-align:center;
+    padding-top:80px;
+    font-family:monospace;
 }
 
-.startBox{
-  text-align:center;
-  padding:35px;
-  border:1px solid #333;
-  border-radius:20px;
-  background:#111;
-  width:min(430px,90%);
+#hackScreen h1{
+    font-size:clamp(30px,6vw,80px);
+    animation:glitch .12s infinite;
 }
 
-button{
-  border:0;
-  padding:16px 28px;
-  border-radius:12px;
-  font-size:18px;
-  font-weight:800;
-  cursor:pointer;
+#hackText{
+    color:#00ff41;
+    font-size:20px;
+    margin-top:50px;
 }
 
-.window{
-  position:absolute;
-  width:300px;
-  min-height:130px;
-  border:3px solid #111;
-  background:#eee;
-  color:#111;
-  box-shadow:10px 10px 0 rgba(0,0,0,.5);
-  z-index:10;
+.fakeProgress{
+    width:min(700px,80%);
+    height:25px;
+    border:2px solid red;
+    margin:30px auto 10px;
 }
 
-.title{
-  background:#1267d6;
-  color:white;
-  padding:7px;
-  font-weight:bold;
-  display:flex;
-  justify-content:space-between;
+#hackBar{
+    height:100%;
+    width:0%;
+    background:red;
 }
 
-.content{
-  padding:15px;
-  font-weight:bold;
-  text-align:center;
+#percent{
+    color:white;
 }
 
-.fakeClose{
-  background:#e22;
-  padding:1px 7px;
-}
-
-#warning{
-  position:fixed;
-  top:15px;left:50%;
-  transform:translateX(-50%);
-  font-family:monospace;
-  font-size:18px;
-  color:#0f0;
-  z-index:9000;
-  text-shadow:0 0 10px #0f0;
-}
-
-#counter{
-  position:fixed;
-  bottom:15px;
-  right:15px;
-  z-index:9000;
-  background:#000;
-  color:#0f0;
-  border:1px solid #0f0;
-  padding:12px;
-  font-family:monospace;
-}
-
-#final{
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:999999;
-  background:#000;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-}
-
-#final h1{
-  font-size:clamp(45px,10vw,130px);
-  margin:0;
-  animation:rainbow .4s infinite;
-}
-
-#final p{
-  font-size:20px;
-}
-
-@keyframes rainbow{
-  0%{color:red}
-  20%{color:yellow}
-  40%{color:lime}
-  60%{color:cyan}
-  80%{color:#f0f}
-  100%{color:red}
-}
-
-.shake{
-  animation:shake .08s infinite;
-}
-
-@keyframes shake{
-  0%{transform:translate(0,0)}
-  25%{transform:translate(7px,-5px)}
-  50%{transform:translate(-6px,6px)}
-  75%{transform:translate(5px,4px)}
-  100%{transform:translate(-4px,-5px)}
-}
-
-.emoji{
-  position:absolute;
-  font-size:70px;
-  z-index:5;
-  user-select:none;
+@keyframes glitch{
+    0%{transform:translate(0)}
+    25%{transform:translate(5px,-3px)}
+    50%{transform:translate(-5px,4px)}
+    75%{transform:translate(4px,5px)}
+    100%{transform:translate(-3px,-4px)}
 }
 </style>
-</head>
-
-<body>
-
-<div id="start">
-  <div class="startBox">
-    <h1>⚠️ VIDEO READY</h1>
-    <p>Tryk for at fortsætte</p>
-    <button onclick="START()">AFSPIL</button>
-  </div>
-</div>
-
-<div id="warning"></div>
-
-<div id="counter">
-  WINDOWS: <span id="count">0</span>
-</div>
-
-<div id="final">
-  <div>
-    <h1>PRANKED 😭🙏</h1>
-    <p>Bradar troede computeren var cooked ☠️</p>
-    <p style="color:#777;font-size:14px">
-      Ingen filer eller oplysninger blev hentet.
-    </p>
-  </div>
-</div>
 
 <script>
+let running = false;
+let animation;
+let uploadInterval;
 
-let started=false;
-let windows=[];
-let count=0;
-
-const messages=[
- "SYSTEM32 HAS LEFT THE CHAT ☠️",
- "VIRUS DETECTED 😭",
- "Deleting homework...",
- "Downloading 847 viruses...",
- "Bro what did you click 💀",
- "CPU IS COOKED 🔥",
- "Windows Defender gave up.",
- "Sending browser history to mom...",
- "Robux balance detected: 3 💔",
- "Skill issue detected.",
- "YOUR PC IS MINE 😈",
- "Uploading embarrassing screenshots...",
- "FBI CONNECTION ESTABLISHED",
- "ERROR ERROR ERROR ERROR",
- "Bro close the tab 😭🙏",
- "Too late lil bro ☠️"
-];
-
-const emojis=[
- "😭","☠️","🙏","💀","🔥","💔","🤡","😈"
-];
+const rat = document.getElementById("rat");
+const screen = document.getElementById("hackScreen");
+const hackText = document.getElementById("hackText");
+const bar = document.getElementById("hackBar");
+const percentText = document.getElementById("percent");
 
 function START(){
 
- if(started)return;
- started=true;
+    if(running) return;
+    running = true;
 
- document.getElementById("start").remove();
+    const start = document.getElementById("start");
+    if(start) start.remove();
 
- document.documentElement.requestFullscreen?.().catch(()=>{});
+    screen.style.display = "block";
+    rat.style.display = "block";
 
- document.body.classList.add("shake");
+    // Browseren bestemmer selv, om fullscreen tillades.
+    document.documentElement.requestFullscreen?.().catch(()=>{});
 
- createWindows();
-
- chaosBackground();
-
- warningText();
-
- setTimeout(finalScreen,15000);
+    startRat();
+    fakeHack();
 }
 
-function createWindows(){
+function startRat(){
 
- let interval=setInterval(()=>{
+    let x = 100;
+    let y = 100;
 
-   if(count>=35){
-      clearInterval(interval);
-      return;
-   }
+    let dx = 12;
+    let dy = 9;
 
-   createWindow();
-   count++;
+    function move(){
 
-   document.getElementById("count").textContent=count;
+        if(!running) return;
 
- },250);
+        x += dx;
+        y += dy;
+
+        const size = 120;
+
+        if(x <= 0 || x + size >= innerWidth){
+            dx *= -1;
+
+            rat.style.transform =
+                `rotate(${Math.random()*720-360}deg) scale(${1+Math.random()})`;
+        }
+
+        if(y <= 0 || y + size >= innerHeight){
+            dy *= -1;
+
+            rat.style.transform =
+                `rotate(${Math.random()*720-360}deg) scale(${1+Math.random()})`;
+        }
+
+        // random cursed movement
+        if(Math.random() < .015){
+            dx = (Math.random()*20+7) * (Math.random()>.5 ? 1:-1);
+            dy = (Math.random()*20+7) * (Math.random()>.5 ? 1:-1);
+        }
+
+        rat.style.left = x+"px";
+        rat.style.top = y+"px";
+
+        animation = requestAnimationFrame(move);
+    }
+
+    move();
 }
 
-function createWindow(){
+function fakeHack(){
 
- const win=document.createElement("div");
- win.className="window";
+    const texts = [
+        "ESTABLISHING REMOTE CONNECTION...",
+        "BYPASSING WINDOWS SECURITY...",
+        "SEARCHING BROWSER DATA...",
+        "PASSWORD DATABASE LOCATED...",
+        "ACCESSING DOCUMENTS...",
+        "CONNECTING TO REMOTE SERVER...",
+        "PREPARING FILE TRANSFER...",
+        "UPLOADING FILES...",
+        "DO NOT TURN OFF YOUR COMPUTER ☠️"
+    ];
 
- win.style.left=
- Math.random()*(innerWidth-300)+"px";
+    let textIndex = 0;
 
- win.style.top=
- Math.random()*(innerHeight-150)+"px";
+    setInterval(()=>{
 
- win.innerHTML=`
-   <div class="title">
-      SYSTEM ERROR
-      <span class="fakeClose">X</span>
-   </div>
+        if(!running) return;
 
-   <div class="content">
-      ${messages[Math.floor(Math.random()*messages.length)]}
-      <br><br>
-      <button>OK</button>
-   </div>
- `;
+        hackText.textContent =
+            texts[textIndex % texts.length];
 
- document.body.appendChild(win);
+        textIndex++;
 
- let dx=(Math.random()*10)+4;
- let dy=(Math.random()*10)+4;
+    },900);
 
- if(Math.random()>.5)dx=-dx;
- if(Math.random()>.5)dy=-dy;
 
- let x=parseFloat(win.style.left);
- let y=parseFloat(win.style.top);
+    let progress = 0;
 
- function move(){
+    uploadInterval = setInterval(()=>{
 
-   if(!document.body.contains(win))return;
+        if(!running) return;
 
-   x+=dx;
-   y+=dy;
+        progress += Math.random()*3;
 
-   if(x<=0 || x+300>=innerWidth)
-      dx*=-1;
+        // keep it stuck near the end for maximum trolling 😭
+        if(progress > 98){
+            progress = 98;
+        }
 
-   if(y<=0 || y+150>=innerHeight)
-      dy*=-1;
+        bar.style.width = progress+"%";
 
-   win.style.left=x+"px";
-   win.style.top=y+"px";
+        percentText.textContent =
+            Math.floor(progress)+"% UPLOADED";
 
-   requestAnimationFrame(move);
- }
-
- move();
-
- win.querySelector("button").onclick=()=>{
-    createWindow();
-    createWindow();
-    createWindow();
- };
-
- win.querySelector(".fakeClose").onclick=()=>{
-    createWindow();
-    createWindow();
- };
+    },180);
 }
 
-function chaosBackground(){
 
- setInterval(()=>{
+// clicking makes the rat go insane
+document.addEventListener("click",()=>{
 
-   document.body.style.background=
-   `hsl(${Math.random()*360},100%,${Math.random()*20+5}%)`;
+    if(!running) return;
 
-   const e=document.createElement("div");
+    rat.style.fontSize =
+        (100 + Math.random()*170)+"px";
 
-   e.className="emoji";
+    rat.textContent =
+        ["🐀","🐁","🐒","🦧","🐸","🦝"]
+        [Math.floor(Math.random()*6)];
 
-   e.textContent=
-   emojis[Math.floor(Math.random()*emojis.length)];
+});
 
-   e.style.left=Math.random()*innerWidth+"px";
-   e.style.top=Math.random()*innerHeight+"px";
 
-   document.body.appendChild(e);
+// SECRET EXIT: SHIFT + K + L
 
-   setTimeout(()=>e.remove(),1000);
+const pressed = new Set();
 
- },150);
+document.addEventListener("keydown",(e)=>{
+
+    pressed.add(e.key.toLowerCase());
+
+    if(
+        e.shiftKey &&
+        pressed.has("k") &&
+        pressed.has("l")
+    ){
+        stopPrank();
+    }
+});
+
+document.addEventListener("keyup",(e)=>{
+    pressed.delete(e.key.toLowerCase());
+});
+
+
+function stopPrank(){
+
+    running = false;
+
+    cancelAnimationFrame(animation);
+    clearInterval(uploadInterval);
+
+    rat.style.display = "none";
+    screen.style.display = "none";
+
+    document.exitFullscreen?.().catch(()=>{});
+
+    document.body.innerHTML = `
+        <div style="
+            position:fixed;
+            inset:0;
+            background:#000;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            text-align:center;
+            color:white;
+            font-family:Arial;
+        ">
+
+            <div>
+
+                <div style="font-size:100px">
+                    🐀
+                </div>
+
+                <h1 style="
+                    font-size:clamp(50px,10vw,130px);
+                    margin:10px;
+                ">
+                    PRANKED 😭🙏
+                </h1>
+
+                <h2>
+                    BRO THOUGHT HE GOT HACKED ☠️
+                </h2>
+
+                <p style="color:#777">
+                    Ingen filer, passwords eller data blev hentet.
+                </p>
+
+            </div>
+
+        </div>
+    `;
 }
-
-function warningText(){
-
- const warning=document.getElementById("warning");
-
- const texts=[
-   "INITIALIZING...",
-   "ACCESSING COMPUTER...",
-   "SEARCHING FILES...",
-   "PASSWORDS FOUND...",
-   "UPLOADING...",
-   "DO NOT TURN OFF COMPUTER ☠️"
- ];
-
- let i=0;
-
- setInterval(()=>{
-
-   warning.textContent=texts[i%texts.length];
-   i++;
-
- },900);
-}
-
-function finalScreen(){
-
- document.body.classList.remove("shake");
-
- document.querySelectorAll(".window,.emoji")
- .forEach(x=>x.remove());
-
- document.getElementById("warning").remove();
- document.getElementById("counter").remove();
-
- document.body.style.background="#000";
-
- document.getElementById("final").style.display="flex";
-}
-
 </script>
-
-</body>
-</html>
